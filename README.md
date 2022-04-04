@@ -1,8 +1,3 @@
-<<<<<<< Updated upstream
-# word-relay
-끝말잇기
-=======
-
 # 끝말 잇기
 
 word-relay
