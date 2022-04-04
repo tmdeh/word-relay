@@ -1,2 +1,0 @@
-# word-relay API Docs
-
