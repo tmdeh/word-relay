@@ -2,7 +2,7 @@
 # word-relay
 끝말잇기
 =======
->>>>>>> Stashed changes
+
 # 끝말 잇기
 
 word-relay
