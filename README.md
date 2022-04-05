@@ -19,7 +19,10 @@ word-relay
     - pakage.json 수정
     - 모듈 다운로드
         - ws
-        - mysql2
+        - mongodb 설치
+        - mongodb 스키마 및 모델 생성
+    - 닉네임 설정
+        - 토큰 발급
 
 깃허브 레포지토리 생성
 

@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
+const nickname = require('../service/nickname')
+
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  
-});
+router.post('/', nickname.set);
 
 module.exports = router;
