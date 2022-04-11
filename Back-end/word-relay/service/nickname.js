@@ -1,5 +1,5 @@
 const User = require("../database/model/user");
-const token = require("../lib/jwt");
+const jwt = require("../lib/jwt");
 
 exports.set = async(req, res) => {
   try {
@@ -7,19 +7,20 @@ exports.set = async(req, res) => {
 
     await check(nickname)
 
-    const accessToken = token.accessSign(nickname);
-  
-  
+    const {token, exp} = jwt.accessSign(nickname);
+
     const user = new User({
       nickname : nickname,
+      token_exp : new Date(exp)
     })
   
     await user.save()
     
     res.status(201).json({
-      token: accessToken,
+      token: token,
     });
   } catch (error) {
+    console.error(error)
     res.status(400).json({
       status : 400,
       message : error
