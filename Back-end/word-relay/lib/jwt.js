@@ -24,3 +24,11 @@ exports.refreshSign = (name) => {
   );
   return token;
 };
+
+
+exports.verify = (req, res, next) => {
+  const token = req.header("Authorization")
+  const nickname = jwt.verify(token, process.env.PRIVATE_KEY)
+  req.body.nickname = nickname.foo
+  next()
+}
