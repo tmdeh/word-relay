@@ -2,22 +2,11 @@ var jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 exports.accessSign = (name) => {
-  token = jwt.sign(
+  const exp = Math.floor(Date.now() / 1000) + (60 * 5)
+  const token = jwt.sign(
     {
       foo: name,
-      exp: Math.floor(Date.now() / 1000) + 60 * 60,
-      algorithm: "SHA256",
-    },
-    process.env.PRIVATE_KEY
-  );
-  return token;
-};
-
-exports.refreshSign = (name) => {
-  token = jwt.sign(
-    {
-      foo: name,
-      exp: Math.floor(Date.now() / 1000) + (60 * 60 * 60),
+      exp: exp,
       algorithm: "SHA256",
     },
     process.env.PRIVATE_KEY
@@ -27,8 +16,19 @@ exports.refreshSign = (name) => {
 
 
 exports.verify = (req, res, next) => {
-  const token = req.header("Authorization")
-  const nickname = jwt.verify(token, process.env.PRIVATE_KEY)
-  req.body.nickname = nickname.foo
-  next()
+  try {
+    const tokenS = req.header("Authorization")
+    const token = jwt.verify(tokenS, process.env.PRIVATE_KEY)
+    const newToken = this.accessSign(token.foo)
+    req.body.nickname = token.foo;
+    req.body.token = newToken;
+    next()
+  } catch (error) {
+    if(error.message == "jwt expired") {
+      res.status(401).json({
+        status : 401,
+        message : error.message
+      })
+    }
+  }
 }
