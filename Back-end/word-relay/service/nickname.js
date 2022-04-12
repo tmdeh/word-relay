@@ -23,7 +23,7 @@ exports.set = async(req, res) => {
     console.error(error)
     res.status(400).json({
       status : 400,
-      message : error
+      message : "이미 존재하는 닉네임입니다."
     })
   }
 };
@@ -35,14 +35,14 @@ exports.change = async(req, res) => {
     await check(newNikcname)
     await User.findOneAndUpdate({nickname: beforeNickname}, {nickname: newNikcname})
     res.status(200).json({
-      status:200,
+      status: 200,
       message : "OK",
       token : req.body.token
     })
   } catch (error) {
     res.status(400).json({
       status : 400,
-      message : error
+      message : "이미 존재하는 닉네임입니다."
     })
   }
 };
@@ -51,6 +51,6 @@ exports.change = async(req, res) => {
 const check = async(name) => {
   const u = await User.find({nickname: name}).exec()
   if(u.length > 0) {
-    throw "이미 사용중인 닉네임 입니다."
+    throw new Error("이미 사용중인 닉네임 입니다.")
   }
 }
