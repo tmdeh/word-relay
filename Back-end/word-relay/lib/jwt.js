@@ -3,7 +3,7 @@ const User = require("../database/model/user");
 require("dotenv").config();
 
 exports.accessSign = (name) => {
-  const exp = parseInt(Date.now()/1000) + 60 * 5
+  const exp = parseInt(Date.now()/1000) + 60 * 10
   const token = jwt.sign(
     {
       foo: name,
@@ -21,9 +21,12 @@ exports.verify = async(req, res, next) => {
   try {
     const tokenS = req.header("Authorization")
     const token = jwt.verify(tokenS, process.env.PRIVATE_KEY)
-    const newToken = this.accessSign(token.foo)
     req.body.nickname = token.foo;
-    req.body.token = newToken;
+    if ((Date.now / 1000) + 60 * 5 > token.exp) {
+      const newToken = this.accessSign(token.foo)
+      req.body.token = newToken;
+    }
+
     next()
   } catch (error) {
     if(error.message == "jwt expired") {
