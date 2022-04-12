@@ -25,6 +25,8 @@ exports.verify = async(req, res, next) => {
     if ((Date.now / 1000) + 60 * 5 > token.exp) {
       const newToken = this.accessSign(token.foo)
       req.body.token = newToken;
+    } else {
+      req.body.token = tokenS
     }
 
     next()
