@@ -5,7 +5,9 @@ export const Button = ({onClick, children, color}) => {
 
 
   return(
-    <StartButton onClick={onClick} color={color}>{children}</StartButton>
+    <ButtonContainer>
+      <StartButton onClick={onClick} color={color}>{children}</StartButton>
+    </ButtonContainer>
   )
 }
 
@@ -15,7 +17,6 @@ export const Button = ({onClick, children, color}) => {
 const StartButton = styled.button`
 width: 15rem;
 height: 3.5rem;
-margin: 5px;
 border-radius: 25px;
 border: none;
 background-color: ${props => props.color};
@@ -26,4 +27,10 @@ box-shadow: 1px 1px 1px 1px gray;
   margin-left: 5px;
   box-shadow: none;
 }
+`
+
+const ButtonContainer = styled.div`
+  width: 16rem;
+  height: 4rem;
+  margin: 10px;
 `

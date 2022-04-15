@@ -2,14 +2,11 @@ import React, { useState } from "react";
 import axios from 'axios'
 import Loading from './Loading'
 import styled from "styled-components";
-import { useRecoilState, useSetRecoilState } from "recoil";
-import { user } from "../recoil/user";
 import { Button } from "./Button";
 
 const Nickname = () => {
   const [nickname, setNickname] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [nicknameStore, setNicknameStore] = useRecoilState(user)
   
 
   const onChange = (e) => {
@@ -31,11 +28,9 @@ const Nickname = () => {
     }
     await axios.post("http://localhost:8080/nickname", data)
       .then((res) => {
-        console.log(res)
+        // console.log(res)
         if (res.status === 201) {
           localStorage.setItem('token', res.data.token)
-          setNicknameStore(nickname)
-          console.log(nicknameStore)
           window.location.href = "/home"
         }
       })

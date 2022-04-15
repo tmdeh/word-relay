@@ -1,5 +1,5 @@
 import './App.css';
-import { Route, Routes, Switch, Redirect, Navigate } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import Nickname from './component/Nickname';
 import Home from './component/Home';
 import Room from './component/Room';
