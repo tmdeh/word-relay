@@ -8,4 +8,6 @@ router.post('/', nickname.set);
 
 router.put('/', jwt.verify, nickname.change);
 
+router.get('/', jwt.verify, nickname.get);
+
 module.exports = router;

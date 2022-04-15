@@ -2,10 +2,14 @@ import React, { useState } from "react";
 import axios from 'axios'
 import Loading from './Loading'
 import styled from "styled-components";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { user } from "../recoil/user";
+import { Button } from "./Button";
 
 const Nickname = () => {
   const [nickname, setNickname] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [nicknameStore, setNicknameStore] = useRecoilState(user)
   
 
   const onChange = (e) => {
@@ -30,6 +34,8 @@ const Nickname = () => {
         console.log(res)
         if (res.status === 201) {
           localStorage.setItem('token', res.data.token)
+          setNicknameStore(nickname)
+          console.log(nicknameStore)
           window.location.href = "/home"
         }
       })
@@ -49,12 +55,14 @@ const Nickname = () => {
     setIsLoading(false)
   }
 
+  const buttonColor = "#99EA97"
+
   return (
     <Background>
       <Main>
         <Title>끝말잇기</Title>
         <NicknameInput placeholder="닉네임을 입력하세요." type="text" onKeyDown={onChange} />
-        <StartButton onClick={send}>시작</StartButton>
+        <Button onClick={send} color={buttonColor}>시작하기</Button>
         <Loading isLoading={isLoading} type="spin" color="99EA97"></Loading>
       </Main>
     </Background>
@@ -93,19 +101,6 @@ border-color: #9EDA9D;
 }
 `
 
-const StartButton = styled.button`
-  width: 370px;
-  height: 75px;
-  border-radius: 25px;
-  border: none;
-  font-size: 30px;
-  background-color: #99EA97;
-  box-shadow: 2px 2px 2px 2px gray;
-  &:active {
-    margin-top: 5px;
-    margin-left: 5px;
-    box-shadow: none;
-  }
-`
+
 
 export default Nickname

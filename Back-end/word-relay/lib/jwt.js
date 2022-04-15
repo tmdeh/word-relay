@@ -3,7 +3,7 @@ const User = require("../database/model/user");
 require("dotenv").config();
 
 exports.accessSign = (name) => {
-  const exp = parseInt(Date.now()/1000) + 60 * 10
+  const exp = parseInt(Date.now()/1000) + 60 * 20
   const token = jwt.sign(
     {
       foo: name,
