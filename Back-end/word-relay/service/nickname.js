@@ -33,11 +33,15 @@ exports.change = async(req, res) => {
     const newNikcname = req.body.newNickname;
     const beforeNickname = req.body.nickname;
     await check(newNikcname)
+
     await User.findOneAndUpdate({nickname: beforeNickname}, {nickname: newNikcname})
+    
+    const {token} = jwt.accessSign(newNikcname)
+
     res.status(200).json({
       status: 200,
       message : "OK",
-      token : req.body.token
+      token : token
     })
   } catch (error) {
     console.error(error)

@@ -45,17 +45,15 @@ const Home = () => {
   const changeNicknameButton = async() => {
     setIsLoading(true)
     let data = {
-      newNikcname: nicknameInput
+      newNickname: nicknameInput
     }
+
     await axios({url:"http://localhost:8080/nickname", data:data, method:"put", headers : {"Authorization" : localStorage.getItem("token")}})
       .then((res) => {
-        console.log(res)
         if (res.status === 200) {
-          console.log("before : ", localStorage.getItem("token"))
           localStorage.setItem('token', res.data.token)
-          console.log("res : ", res.data.token)
-          console.log("after : ", localStorage.getItem("token"))
-          // window.location.href = "/home"
+          setNickname(nicknameInput);
+          setOpen(false);
         }
       })
       .catch((err) => {
