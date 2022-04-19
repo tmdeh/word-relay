@@ -39,7 +39,8 @@ const Home = () => {
   }
 
   const onClickCreateRoomButton = () => {
-
+    console.log("aa")
+    window.location.href= "/room/create";
   }
 
   const changeNicknameButton = async() => {
@@ -87,7 +88,7 @@ const Home = () => {
         <NameDiv>{nickname}</NameDiv>
         <Buttons>
           <Button color={"#99EA97"} onClick={onClickChangeNicknameButton}>닉네임 변경</Button>
-          <Button color={"#99EA97"} onclick = {onClickCreateRoomButton} >시작하기</Button>
+          <Button color={"#99EA97"} onClick = {onClickCreateRoomButton}>방 만들기</Button>
         </Buttons>
         {/* <button onClick={logoutClick}>로그아웃</button> */}
       </NavigationBar>
