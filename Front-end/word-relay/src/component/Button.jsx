@@ -12,6 +12,8 @@ export const Button = ({onClick, children, color}) => {
 }
 
 
+export default Button;
+
 
 
 const StartButton = styled.button`
