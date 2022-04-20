@@ -4,7 +4,11 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors')
-var nickname = require('./routes/nickname');
+
+const nickname = require('./routes/nickname');
+const room = require('./routes/room')
+
+const {verify} = require('./lib/jwt')
 
 var app = express();
 
@@ -23,7 +27,7 @@ app.use(cors())
 dbconnect()
 
 app.use('/nickname', nickname);
-
+app.use('/room', verify, room)
 
 
 // catch 404 and forward to error handler
