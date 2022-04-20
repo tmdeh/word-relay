@@ -2,16 +2,17 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const roomSchema = new Schema({
-    name: String,
-    member_limit: Number,
-    has_password: Boolean,
-    password: String,
-    member: [{type: Schema.Types.ObjectId, ref: "user"}],
-    game_breakdown: {   
-        author: {type: Schema.Types.ObjectId, ref: "user"},
-        word: String,
-        write_at: Timestamp,
-    }   
+    name: String, //방 이름
+    member_limit: Number, //최대 멤버 수
+    has_password: Boolean, //비밀번호가 존재하는지
+    password: String, //비밀번호
+    member: [{type: mongoose.SchemaType.ObjectId, ref: "user"}], //멤버 목록
+    head: {type: Schema.Types.ObjectId, ref:"user"},  //방장
+    history:{
+        author: {type: mongoose.SchemaType.ObjectId, ref:"user"},
+        score: Number,
+        text: String,
+    }
 })
 
 module.exports = mongoose.model('room', roomSchema);
