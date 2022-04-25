@@ -1,5 +1,7 @@
+import axios from "axios";
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
+import { HOST } from "../config";
 import Button from './Button'
 
 const CreateRoom = () => {
@@ -16,7 +18,24 @@ const CreateRoom = () => {
       password : password,
       memberLimit: memberLimit
     }
-    console.log(data)
+    axios({
+      url : `http://${HOST}/room`,
+      method: 'post',
+      data: data,
+      headers : {
+        Authorization: localStorage.getItem("token")
+      }
+    }).then((res) => {
+      if(res.status === 201) {
+        window.location.href = '/room/' + res.data.data.resData._id
+      }
+    }).catch((error) => {
+      console.log(error.response)
+      if(error.response.status === 401) {
+        localStorage.removeItem("token")
+        alert('토큰이 만료 됐습니다.')
+      }
+    })
   }
 
   const onClickCancleButton = () => {

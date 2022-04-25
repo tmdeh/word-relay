@@ -6,9 +6,8 @@ import Room from './component/Room';
 import CreateRoom from './component/CreateRoom';
 import styled from "styled-components";
 
-
-
 function App() {
+
   let token = localStorage.getItem("token")
 
   if (token != null) return (

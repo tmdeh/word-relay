@@ -1,4 +1,5 @@
 import axios from "axios";
+import { HOST } from "../config";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Button } from "./Button";
@@ -11,9 +12,9 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [open, setOpen] = useState(false);
 
-  const getNickname = () => {
-    // console.log(localStorage.getItem("token"))
-    axios.get('http://localhost:8080/nickname', {
+
+  useEffect(() => {
+    axios.get(`http://${HOST}/nickname`, {
       headers: {
         Authorization: localStorage.getItem("token")
       }
@@ -27,12 +28,7 @@ const Home = () => {
         window.location.href = '/'
       }
     })
-
-  }
-  useEffect(() => {
-    getNickname()
   }, [])
-
 
   const onClickChangeNicknameButton = () => {
     setOpen(true)
@@ -48,7 +44,6 @@ const Home = () => {
     let data = {
       newNickname: nicknameInput
     }
-
     await axios({url:"http://localhost:8080/nickname", data:data, method:"put", headers : {"Authorization" : localStorage.getItem("token")}})
       .then((res) => {
         if (res.status === 200) {
