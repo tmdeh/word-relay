@@ -27,7 +27,8 @@ const CreateRoom = () => {
       }
     }).then((res) => {
       if(res.status === 201) {
-        window.location.href = '/room/' + res.data.data.resData._id
+        console.log(res)
+        // window.location.href = '/room/' + res.data.data.resData._id
       }
     }).catch((error) => {
       console.log(error.response)

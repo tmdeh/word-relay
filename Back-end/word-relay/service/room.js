@@ -4,8 +4,6 @@ const user = require('../database/model/user')
 exports.create = async(req, res) => {
   try {
     let { _id } = await user.findOne({nickname: req.body.nickname})
-    
-    
     const roomData = new Room({
       name : req.body.title,
       member_limit: req.body.memberLimit,

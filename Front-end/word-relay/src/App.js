@@ -5,12 +5,10 @@ import Home from './component/Home';
 import Room from './component/Room';
 import CreateRoom from './component/CreateRoom';
 import styled from "styled-components";
+import { useEffect } from 'react';
 
 function App() {
-
-  let token = localStorage.getItem("token")
-
-  if (token != null) return (
+  if (localStorage.getItem("token") != null) return (
     <AppDiv>
       <Routes>
           <Route path="/home" element={<Home />}></Route>
@@ -25,16 +23,16 @@ function App() {
   else {
     return(
       <AppDiv>
-      <Routes>
-            <Route path="/" element={<Nickname />} ></Route>
-            <Route path='*' element={<Navigate replace to='/' />} />
-      </Routes>
-    </AppDiv>
+        <Routes>
+              <Route path="/" element={<Nickname />} ></Route>
+              <Route path='*' element={<Navigate replace to='/' />} />
+        </Routes>
+      </AppDiv>
   )}
 }
 const AppDiv = styled.div`
-width: 100vw;
-height: 100vh;
+/* width: 95vw; */
+height: 80vh;
 `
 
 export default App;

@@ -12,23 +12,26 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [open, setOpen] = useState(false);
 
-
   useEffect(() => {
-    axios.get(`http://${HOST}/nickname`, {
-      headers: {
-        Authorization: localStorage.getItem("token")
-      }
-    }).then((res) => {
-      // console.log(res)
+    getNickname()
+  }, [])
+
+  const getNickname = async() => {
+    try {
+      const res = await axios.get(`http://${HOST}/nickname`, {
+        headers: {
+          Authorization: localStorage.getItem("token")
+        }
+      })
       setNickname(res.data.nickname)
-    }).catch((error) => {
+    } catch (error) {
       if (error.response.status === 401) {
         alert("토큰이 만료되었습니다.")
         localStorage.removeItem("token")
         window.location.href = '/'
       }
-    })
-  }, [])
+    }
+  }
 
   const onClickChangeNicknameButton = () => {
     setOpen(true)
@@ -44,7 +47,7 @@ const Home = () => {
     let data = {
       newNickname: nicknameInput
     }
-    await axios({url:"http://localhost:8080/nickname", data:data, method:"put", headers : {"Authorization" : localStorage.getItem("token")}})
+    await axios({url:`http://${HOST}/nickname`, data:data, method:"put", headers : {"Authorization" : localStorage.getItem("token")}})
       .then((res) => {
         if (res.status === 200) {
           localStorage.setItem('token', res.data.token)
