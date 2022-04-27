@@ -1,9 +1,14 @@
 const Room = require('../database/model/room')
 const user = require('../database/model/user')
 
-exports.create = async(req, res) => {
+exports.create = async(req, res, next) => {
   try {
     let { _id } = await user.findOne({nickname: req.body.nickname})
+
+    if(req.body.title === "" || req.hasPassword && req.password === "") {
+      throw new Error("입력칸을 확인해주세요.")
+    }
+
     const roomData = new Room({
       name : req.body.title,
       member_limit: req.body.memberLimit,
@@ -25,10 +30,8 @@ exports.create = async(req, res) => {
       }
     })
   } catch (error) {
-    res.status(400).json({
-      status: 400,
-      message: "bad request"
-    })
+    error.status = 400
+    next(error)
   }
 }
 
@@ -39,7 +42,6 @@ exports.join = async(req, res) => {
 exports.getList = async(req, res) => {
   try {
     const data = await Room.find();
-
     res.status(200).json({
       status: 200,
       message : "ok",

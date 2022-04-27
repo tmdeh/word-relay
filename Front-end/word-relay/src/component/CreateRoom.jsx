@@ -3,22 +3,25 @@ import React, { useRef, useState } from "react";
 import styled from "styled-components";
 import { HOST } from "../config";
 import Button from './Button'
+import Loading from "./Loading";
 
 const CreateRoom = () => {
 
-  const [title, setTitle] = useState("")
-  const [password, setPassword] = useState("")
-  const [memberLimit, setMemberLimit] = useState(2)
+  const [loading, setLoading] = useState(false);
+  const [title, setTitle] = useState("");
+  const [password, setPassword] = useState("");
+  const [memberLimit, setMemberLimit] = useState(2);
 
   const inputRef = useRef(null)
-  const onClickCreateButton = () => {
+  const onClickCreateButton = async() => {
     const data = {
       title : title,
       hasPassword : !inputRef.current.disabled,
       password : password,
       memberLimit: memberLimit
     }
-    axios({
+    setLoading(true)
+    await axios({
       url : `http://${HOST}/room`,
       method: 'post',
       data: data,
@@ -27,8 +30,7 @@ const CreateRoom = () => {
       }
     }).then((res) => {
       if(res.status === 201) {
-        console.log(res)
-        // window.location.href = '/room/' + res.data.data.resData._id
+        window.location.href = '/room/' + res.data.data.resData._id
       }
     }).catch((error) => {
       console.log(error.response)
@@ -36,7 +38,11 @@ const CreateRoom = () => {
         localStorage.removeItem("token")
         alert('토큰이 만료 됐습니다.')
       }
+      if(error.response.status===400) {
+        alert(error.response.data.message)
+      }
     })
+    setLoading(false)
   }
 
   const onClickCancleButton = () => {
@@ -73,17 +79,17 @@ const CreateRoom = () => {
           <PasswordInputBox placeholder="비밀번호" type="password" ref={inputRef} disabled onChange={passwordChange}></PasswordInputBox>
         </Password>
         <Select onChange={onChangeSelect}>
-          <Option value="">인원수</Option>
-          <Option value="2">2</Option>
-          <Option value="3">3</Option>
-          <Option value="4">4</Option>
-          <Option value="5">5</Option>
+          <Option value="2">2명</Option>
+          <Option value="3">3명</Option>
+          <Option value="4">4명</Option>
+          <Option value="5">5명</Option>
         </Select>
       </InputGroup>
       <Buttons>
         <Button onClick={onClickCreateButton} color={"#99EA97"}>만들기</Button>
         <Button onClick={onClickCancleButton} color={"#EA9797"}>취소</Button>
       </Buttons>
+      <Loading isLoading={loading} type="spin" color="99EA97"></Loading>
     </Container>
   )
 }
