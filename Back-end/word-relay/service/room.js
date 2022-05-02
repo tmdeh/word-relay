@@ -36,17 +36,35 @@ exports.create = async(req, res, next) => {
 }
 
 exports.join = async(req, res) => {
-
+  try {
+    
+  } catch (error) {
+    
+  }
 }
 
 exports.getList = async(req, res) => {
   try {
-    const data = await Room.find();
+    // res.status(200).json({})
+    const data = await Room.find().populate('member').populate('head');
+    
+    if(data.length === 0) {
+      res.status(204);
+      return
+    }
+
+    for(let d of data) {
+      if(d.member.length) {
+        Room.deleteOne(d._id);
+      }
+    }
+
+
     res.status(200).json({
       status: 200,
-      message : "ok",
+      message : "OK",
       token: req.body.token,
-      data: data
+      list: data
     })
   } catch (error) {
     res.status(500).json({
@@ -65,5 +83,9 @@ exports.getMembers = (req, res) => {
 }
 
 exports.exit = (req, res) => {
-
+  try {
+    
+  } catch (error) {
+    
+  }
 }

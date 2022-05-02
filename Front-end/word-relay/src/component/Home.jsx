@@ -9,11 +9,13 @@ import Modal from "./Model";
 const Home = () => {
   const [nickname, setNickname] = useState("");
   const [nicknameInput, setNicknameInput] = useState("");
+  const [roomList, setRoomList] = useState([]);
   const [isLoading, setIsLoading] = useState(false)
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    getNickname()
+    getNickname();
+    getRoomList();
   }, [])
 
   const getNickname = async() => {
@@ -23,6 +25,7 @@ const Home = () => {
           Authorization: localStorage.getItem("token")
         }
       })
+      localStorage.setItem("token", res.data.token);
       setNickname(res.data.nickname)
     } catch (error) {
       if (error.response.status === 401) {
@@ -30,6 +33,23 @@ const Home = () => {
         localStorage.removeItem("token")
         window.location.href = '/'
       }
+    }
+  }
+
+  const getRoomList = async() => {
+    try {
+      const res = await axios.get(`http://${HOST}/room/list`, {
+        headers: {
+          Authorization: localStorage.getItem("token")
+        }
+      });
+      if(res.status === 200) {
+        console.log(res.data)
+        localStorage.setItem("token", res.data.token);
+        setRoomList(res.data.list)
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -98,6 +118,19 @@ const Home = () => {
         </ModalContainer>
       </Modal>
       <Loading isLoading={isLoading} type="spin" color="99EA97"></Loading>
+      <RoomList>
+        {roomList.map(i => 
+        <RoomItem key={i._id}>
+          <Title>{i.name}</Title>
+          <Head>{i.head.nickname}</Head>
+          <Members>
+            <Member>{i.member.length}</Member>/
+            <Limit>{i.member_limit}</Limit>
+          </Members>
+          <img src={i.has_password ? "lock2.svg" : "lock2.svg1"}></img>
+        </RoomItem>
+        )}
+      </RoomList>
     </div>
   )
 }
@@ -136,6 +169,41 @@ const ModalContainer = styled.div`
   justify-content: center;
   align-items: center;
   height: 400px;
+`
+
+const RoomList = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`
+
+const RoomItem = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background-color: #99EA97;
+  width: 80%;
+  height: 4rem;
+  margin-top: 25px;
+  border-radius: 25px;
+`
+
+const Members = styled.div`
+  display: flex;
+`
+
+const Title = styled.div`
+`
+
+const Head = styled.div`
+`
+
+const Limit = styled.div`
+  
+`
+
+const Member = styled.div`
+  
 `
 
 export default Home
