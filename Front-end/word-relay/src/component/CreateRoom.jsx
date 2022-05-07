@@ -30,6 +30,8 @@ const CreateRoom = () => {
       }
     }).then((res) => {
       if(res.status === 201) {
+        console.log(res.data)
+        // localStorage.setItem('token', res.data.data.token')
         window.location.href = '/room/' + res.data.data.resData._id
       }
     }).catch((error) => {
@@ -42,7 +44,7 @@ const CreateRoom = () => {
         alert(error.response.data.message)
       }
     })
-    setLoading(false)
+    setLoading(false)  
   }
 
   const onClickCancleButton = () => {

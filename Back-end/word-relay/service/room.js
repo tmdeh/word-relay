@@ -52,14 +52,6 @@ exports.getList = async(req, res) => {
       res.status(204);
       return
     }
-
-    for(let d of data) {
-      if(d.member.length) {
-        Room.deleteOne(d._id);
-      }
-    }
-
-
     res.status(200).json({
       status: 200,
       message : "OK",
@@ -67,6 +59,7 @@ exports.getList = async(req, res) => {
       list: data
     })
   } catch (error) {
+    console.log(error)
     res.status(500).json({
       status : 500,
       message : "서버에 문제 발생"
