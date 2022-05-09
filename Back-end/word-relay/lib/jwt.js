@@ -4,7 +4,7 @@ const Room = require("../database/model/room");
 require("dotenv").config();
 
 exports.accessSign = (name) => {
-  const exp = parseInt(Date.now()/1000) + 60 * 1
+  const exp = parseInt(Date.now()/1000) + 60 * 240
   const token = jwt.sign(
     {
       foo: name,

@@ -1,6 +1,21 @@
 const Room = require('../database/model/room')
 const user = require('../database/model/user')
 
+
+exports.get = async(req, res, next) => {
+  try {
+    const roomId = req.params.roomId;
+    const roomInfo = await Room.find({_id : roomId}).populate("head").populate("member");
+    res.status(200).json({
+      roomInfo: roomInfo[0],
+      nickname: req.body.nickname
+    })
+  } catch (error) {
+    next(error)
+    res.status(500)
+  }
+}
+
 exports.create = async(req, res, next) => {
   try {
     let { _id } = await user.findOne({nickname: req.body.nickname})

@@ -12,10 +12,10 @@ router.post('/:roomId', room.join);
 //방 리스트
 router.get('/list', room.getList);
 
-//멤버 목록
-router.get('/member', room.getMembers);
-
 //방 퇴장
 router.delete("/:roomId", room.exit);
+
+//방 정보 가져오기
+router.get('/:roomId', room.get)
 
 module.exports = router;

@@ -42,6 +42,10 @@ const Nickname = () => {
             alert("이미 사용중인 닉네임 입니다.")
           } else if(err.response.data.status === 500) {
             alert("서버 오류 발생")
+          } else if(err.response.data.status === 401) {
+            alert("토큰 만료 메인으로 돌아갑니다.")
+            localStorage.removeItem("token");
+            window.location.reload();
           } else {
             alert("알수 없는 오류 발생")
           }
