@@ -3,11 +3,14 @@ import axios from 'axios'
 import Loading from './Loading'
 import styled from "styled-components";
 import { Button } from "./Button";
+import { useNavigate } from "react-router-dom";
 
 const Nickname = () => {
   const [nickname, setNickname] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   
+
+  const navigate = useNavigate();
 
   const onChange = (e) => {
     setNickname(e.target.value)
@@ -31,7 +34,7 @@ const Nickname = () => {
         // console.log(res)
         if (res.status === 201) {
           localStorage.setItem('token', res.data.token)
-          window.location.href = "/home"
+          navigate("/home")
         }
       })
       .catch((err) => {
@@ -45,7 +48,7 @@ const Nickname = () => {
           } else if(err.response.data.status === 401) {
             alert("토큰 만료 메인으로 돌아갑니다.")
             localStorage.removeItem("token");
-            window.location.reload();
+            navigate("/")
           } else {
             alert("알수 없는 오류 발생")
           }

@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { Button } from "./Button";
 import Loading from "./Loading";
 import Modal from "./Model";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [nickname, setNickname] = useState("");
@@ -13,10 +14,13 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [open, setOpen] = useState(false);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     getNickname();
     getRoomList();
   }, [])
+
 
   const getNickname = async() => {
     try {
@@ -31,10 +35,12 @@ const Home = () => {
       if (error.response.status === 401) {
         alert("토큰이 만료되었습니다.")
         localStorage.removeItem("token")
-        window.location.href = '/'
+        navigate("/")
       }
     }
   }
+
+
 
   const getRoomList = async() => {
     try {
@@ -49,6 +55,11 @@ const Home = () => {
         setRoomList(res.data.list)
       }
     } catch (error) {
+      if (error.response.status === 401) {
+        alert("토큰이 만료되었습니다.")
+        localStorage.removeItem("token")
+        navigate("/")
+      }
       console.log(error)
     }
   }
@@ -58,8 +69,7 @@ const Home = () => {
   }
 
   const onClickCreateRoomButton = () => {
-    console.log("aa")
-    window.location.href= "/room/create";
+    navigate("/room/create");
   }
 
   const changeNicknameButton = async() => {
@@ -127,7 +137,7 @@ const Home = () => {
             <Member>{i.member.length}</Member>/
             <Limit>{i.member_limit}</Limit>
           </Members>
-          <img src={i.has_password ? "lock2.svg" : "lock2.svg1"}></img>
+          <img src={i.has_password ? "lock2.svg" : "lock1.svg"}></img>
         </RoomItem>
         )}
       </RoomList>

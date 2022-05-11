@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { HOST } from "../config";
 import Button from './Button'
@@ -11,6 +12,8 @@ const CreateRoom = () => {
   const [title, setTitle] = useState("");
   const [password, setPassword] = useState("");
   const [memberLimit, setMemberLimit] = useState(2);
+
+  const navigate = useNavigate();
 
   const inputRef = useRef(null)
   const onClickCreateButton = async() => {
@@ -32,13 +35,14 @@ const CreateRoom = () => {
       if(res.status === 201) {
         console.log(res.data)
         // localStorage.setItem('token', res.data.data.token')
-        window.location.href = '/room/' + res.data.data.resData._id
+        navigate('/room/' + res.data.data.resData._id)
       }
     }).catch((error) => {
       console.log(error.response)
       if(error.response.status === 401) {
         localStorage.removeItem("token")
         alert('토큰이 만료 됐습니다.')
+        navigate("/")
       }
       if(error.response.status===400) {
         alert(error.response.data.message)
@@ -48,7 +52,7 @@ const CreateRoom = () => {
   }
 
   const onClickCancleButton = () => {
-    window.location.href = "/home"
+    navigate("/home")
   }
 
   const onClickCheck = () => {

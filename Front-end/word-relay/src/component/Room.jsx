@@ -8,7 +8,7 @@ import Button from "./Button";
 import Loading from "./Loading";
 
 
-const Room = () => {
+const Room = ({history}) => {
 
   const { id } = useParams();
 
@@ -32,7 +32,7 @@ const Room = () => {
       setMemberList(response.data.roomInfo.member);
       setNickname(response.data.nickname);
       setMemberLimit(response.data.roomInfo.member_limit);
-      console.log(response.data);
+      // console.log(response.data);
       setLoading(false);
     } catch (error) {
       if (error.response.status === 401) {
@@ -43,7 +43,9 @@ const Room = () => {
       console.log(error)
     }
   }
+  
 
+  
   useEffect(() => {
     getRoomInfo();
   }, [])
@@ -99,8 +101,8 @@ const Room = () => {
                   {nickname === head ? <img src="/star.svg" /> : null}
                 </Star>
               </Member>)}
-            {[...Array(memberLimit-memberList.length)].map(i => 
-              <Empty></Empty>
+            {[...Array(memberLimit-memberList.length)].map((v,i) => 
+              <Empty key={i}></Empty>
               )}
           </Body>
           <Exit>
