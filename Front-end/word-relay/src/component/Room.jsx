@@ -53,8 +53,31 @@ const Room = () => {
 
   }
 
-  const onExitButtonClick = () => {
-
+  const onExitButtonClick = async() => {
+    try {
+      let con = window.confirm("나가시겠습니까?");
+      if(con) {
+        await axios.delete(`http://${HOST}/room/${id}`,{
+          headers: {
+            Authorization: localStorage.getItem("token")
+          }
+        })
+        window.location.href = "/home";
+      }
+    } catch (error) {
+      if (error.response.status === 401) {
+        alert("토큰 만료 메인으로 돌아갑니다.");
+        localStorage.removeItem("token");
+        window.location.reload();
+      }
+      else if(error.response.status === 400) {
+        alert("이미 나갔습니다.")
+        window.location.href = "/home";
+      } else {
+        alert("오류 발생")
+      }
+      console.log(error)
+    }
   }
 
   return (
@@ -73,7 +96,7 @@ const Room = () => {
               <Member key={i._id}>
                 <MemberName>{i.nickname}</MemberName>
                 <Star>
-                  <img src="/star.svg" />
+                  {nickname === head ? <img src="/star.svg" /> : null}
                 </Star>
               </Member>)}
             {[...Array(memberLimit-memberList.length)].map(i => 

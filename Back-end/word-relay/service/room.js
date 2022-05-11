@@ -8,7 +8,8 @@ exports.get = async(req, res, next) => {
     const roomInfo = await Room.find({_id : roomId}).populate("head").populate("member");
     res.status(200).json({
       roomInfo: roomInfo[0],
-      nickname: req.body.nickname
+      nickname: req.body.nickname,
+      token : req.body.token
     })
   } catch (error) {
     next(error)
@@ -90,10 +91,46 @@ exports.getMembers = (req, res) => {
   }
 }
 
-exports.exit = (req, res) => {
+exports.exit = async(req, res, next) => {
   try {
+    const roomId = req.params.roomId;
+    const room = await Room.findById(roomId).populate("head").populate("member");
+    // console.log(room)
+
+    let userId = "";
+    for(let i of room.member) {
+      console.log(req.body.nickname)
+      if(i.nickname === req.body.nickname) {
+        userId = i._id;
+      }
+    }
+
+    if(userId === "") {
+      let error = new Error("없는 사용자입니다.");
+      error.status = 400;
+      throw(error)
+    }
+
+    if(room.head.nickname === req.body.nickname) {
+      await Room.deleteOne({_id : roomId});
+      res.status(200).json({
+        status: 200,
+        message : "OK",
+        token : req.body.token
+      })
+      return;
+    }
     
+    await Room.updateOne(
+      {_id : roomId}, 
+      {$pull: {member : userId}}
+    );
+    res.status(200).json({
+      status: 200,
+      message : "OK",
+      token : req.body.token
+    })
   } catch (error) {
-    
+    next(error)
   }
 }
