@@ -1,5 +1,5 @@
 const Room = require('../database/model/room')
-const user = require('../database/model/user')
+const User = require('../database/model/user')
 
 
 exports.get = async(req, res, next) => {
@@ -19,7 +19,7 @@ exports.get = async(req, res, next) => {
 
 exports.create = async(req, res, next) => {
   try {
-    let { _id } = await user.findOne({nickname: req.body.nickname})
+    let { _id } = await User.findOne({nickname: req.body.nickname})
 
     if(req.body.title === "" || req.hasPassword && req.password === "") {
       throw new Error("입력칸을 확인해주세요.")
@@ -53,10 +53,35 @@ exports.create = async(req, res, next) => {
 
 exports.join = async(req, res) => {
   try {
-    
+    const roomId = req.params.roomId;
+    if(passwordCheck(roomId, req.body.haspassword, req.body.password)) {
+      const {_id} = await User.findOne({nickname : req.body.nickname});
+      await Room.findOneAndUpdate({_id : roomId}, {$push: { member: _id }})
+      res.status(201).json({
+        status: 201,
+        message : "Created"
+      })
+    } else {
+      res.status(400).json({
+        status: 400,
+        message : "Join Failed"
+      })
+    }
   } catch (error) {
-    
+    next(error)
   }
+}
+
+const passwordCheck = async(roomId, hasPassword, userPassword) => {
+  if(hasPassword) { //비밀번호가 존재할 경우
+    const {roomPassword} = await Room.findById(roomId)
+    if(roomPassword == userPassword) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  return true
 }
 
 exports.getList = async(req, res) => {
@@ -80,14 +105,6 @@ exports.getList = async(req, res) => {
       status : 500,
       message : "서버에 문제 발생"
     })
-  }
-}
-
-exports.getMembers = (req, res) => {
-  try {
-    
-  } catch (error) {
-    
   }
 }
 

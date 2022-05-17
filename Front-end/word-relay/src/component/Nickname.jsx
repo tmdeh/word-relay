@@ -4,6 +4,7 @@ import Loading from './Loading'
 import styled from "styled-components";
 import { Button } from "./Button";
 import { useNavigate } from "react-router-dom";
+import tokenExpired from "../expired";
 
 const Nickname = () => {
   const [nickname, setNickname] = useState("");
@@ -34,7 +35,7 @@ const Nickname = () => {
         // console.log(res)
         if (res.status === 201) {
           localStorage.setItem('token', res.data.token)
-          navigate("/home")
+          window.location.href = "/home"
         }
       })
       .catch((err) => {
@@ -46,9 +47,7 @@ const Nickname = () => {
           } else if(err.response.data.status === 500) {
             alert("서버 오류 발생")
           } else if(err.response.data.status === 401) {
-            alert("토큰 만료 메인으로 돌아갑니다.")
-            localStorage.removeItem("token");
-            navigate("/")
+            tokenExpired(navigate);
           } else {
             alert("알수 없는 오류 발생")
           }

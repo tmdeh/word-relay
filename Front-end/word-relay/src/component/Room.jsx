@@ -1,14 +1,15 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 
 import { HOST } from "../config";
+import tokenExpired from "../expired";
 import Button from "./Button";
 import Loading from "./Loading";
 
 
-const Room = ({history}) => {
+const Room = () => {
 
   const { id } = useParams();
 
@@ -18,6 +19,8 @@ const Room = ({history}) => {
   const [title, setTitle] = useState("");
   const [memberLimit, setMemberLimit] = useState(0);
   const [memberList, setMemberList] = useState([]);
+
+  const navigate = useNavigate();
 
   const getRoomInfo = async () => {
     try {
@@ -36,8 +39,7 @@ const Room = ({history}) => {
       setLoading(false);
     } catch (error) {
       if (error.response.status === 401) {
-        alert("토큰 만료 메인으로 돌아갑니다.");
-        localStorage.removeItem("token");
+        tokenExpired(navigate)
         window.location.reload();
       }
       console.log(error)
@@ -59,12 +61,13 @@ const Room = ({history}) => {
     try {
       let con = window.confirm("나가시겠습니까?");
       if(con) {
-        await axios.delete(`http://${HOST}/room/${id}`,{
+        const response = await axios.delete(`http://${HOST}/room/${id}`,{
           headers: {
             Authorization: localStorage.getItem("token")
           }
         })
-        window.location.href = "/home";
+        localStorage.setItem("token", response.data.token);
+        navigate("/home");
       }
     } catch (error) {
       if (error.response.status === 401) {
@@ -74,7 +77,7 @@ const Room = ({history}) => {
       }
       else if(error.response.status === 400) {
         alert("이미 나갔습니다.")
-        window.location.href = "/home";
+        navigate("/home");
       } else {
         alert("오류 발생")
       }

@@ -3,6 +3,7 @@ import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { HOST } from "../config";
+import tokenExpired from "../expired";
 import Button from './Button'
 import Loading from "./Loading";
 
@@ -40,9 +41,7 @@ const CreateRoom = () => {
     }).catch((error) => {
       console.log(error.response)
       if(error.response.status === 401) {
-        localStorage.removeItem("token")
-        alert('토큰이 만료 됐습니다.')
-        navigate("/")
+        tokenExpired(navigate)
       }
       if(error.response.status===400) {
         alert(error.response.data.message)

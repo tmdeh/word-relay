@@ -6,6 +6,7 @@ import { Button } from "./Button";
 import Loading from "./Loading";
 import Modal from "./Model";
 import { useNavigate } from "react-router-dom";
+import tokenExpired from "../expired";
 
 const Home = () => {
   const [nickname, setNickname] = useState("");
@@ -33,9 +34,7 @@ const Home = () => {
       setNickname(res.data.nickname)
     } catch (error) {
       if (error.response.status === 401) {
-        alert("토큰이 만료되었습니다.")
-        localStorage.removeItem("token")
-        navigate("/")
+        tokenExpired(navigate)
       }
     }
   }
@@ -56,9 +55,9 @@ const Home = () => {
       }
     } catch (error) {
       if (error.response.status === 401) {
-        alert("토큰이 만료되었습니다.")
-        localStorage.removeItem("token")
-        navigate("/")
+        console.log("B")
+        tokenExpired(navigate)
+        window.location.reload();
       }
       console.log(error)
     }
@@ -69,7 +68,7 @@ const Home = () => {
   }
 
   const onClickCreateRoomButton = () => {
-    navigate("/room/create");
+    navigate("/room/create", {replace: true});
   }
 
   const changeNicknameButton = async() => {
