@@ -49,7 +49,6 @@ const Home = () => {
         }
       });
       if(res.status === 200) {
-        console.log(res.data)
         localStorage.setItem("token", res.data.token);
         setRoomList(res.data.list)
       }
@@ -68,7 +67,7 @@ const Home = () => {
   }
 
   const onClickCreateRoomButton = () => {
-    navigate("/room/create", {replace: true});
+    navigate("/room/create");
   }
 
   const changeNicknameButton = async() => {
@@ -104,6 +103,27 @@ const Home = () => {
     setNicknameInput(e.target.value)
   }
 
+  const onClickRoom = async(e) => {
+    const roomId = e.currentTarget.id;
+    setIsLoading(true)
+    try {
+      const response = await axios({
+        url : `http://${HOST}/room/${roomId}`,
+        method: "POST",
+        headers : {
+          "Authorization" : localStorage.getItem("token")
+        }
+      })
+      if(response.status === 201) {
+        localStorage.setItem("token", response.data.token);
+        navigate(`/room/home/${roomId}`)
+      }
+      console.log(response)
+    } catch (error) {
+      console.error(error)
+    }
+    setIsLoading(false)
+  }
 
   const close = () => {
     setOpen(false)
@@ -129,7 +149,7 @@ const Home = () => {
       <Loading isLoading={isLoading} type="spin" color="99EA97"></Loading>
       <RoomList>
         {roomList.map(i => 
-        <RoomItem key={i._id}>
+        <RoomItem key={i._id} onClick={onClickRoom} id={i._id}>
           <Title>{i.name}</Title>
           <Head>{i.head.nickname}</Head>
           <Members>

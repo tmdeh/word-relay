@@ -59,6 +59,7 @@ exports.join = async(req, res) => {
       await Room.findOneAndUpdate({_id : roomId}, {$push: { member: _id }})
       res.status(201).json({
         status: 201,
+        token: req.body.token,
         message : "Created"
       })
     } else {
