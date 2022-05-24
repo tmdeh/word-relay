@@ -54,9 +54,7 @@ const Home = () => {
       }
     } catch (error) {
       if (error.response.status === 401) {
-        console.log("B")
         tokenExpired(navigate)
-        window.location.reload();
       }
       console.log(error)
     }
@@ -120,7 +118,10 @@ const Home = () => {
       }
       console.log(response)
     } catch (error) {
-      console.error(error)
+      if (error.response.status === 401) {
+        tokenExpired(navigate)
+      }
+      console.log(error)
     }
     setIsLoading(false)
   }
