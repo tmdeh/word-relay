@@ -58,7 +58,6 @@ exports.get = async(req, res) => {
     res.status(200).json({
       message : "OK",
       nickname  : req.body.nickname,
-      token : req.body.token
     })
   } catch (error) {
     console.log(error)

@@ -76,7 +76,6 @@ const Room = () => {
             Authorization: localStorage.getItem("token")
           }
         })
-        localStorage.setItem("token", response.data.token);
         navigate("/home");
       }
     } catch (error) {

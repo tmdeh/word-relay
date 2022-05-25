@@ -9,7 +9,6 @@ exports.get = async(req, res, next) => {
     res.status(200).json({
       roomInfo: roomInfo[0],
       nickname: req.body.nickname,
-      token : req.body.token
     })
   } catch (error) {
     next(error)
@@ -41,7 +40,6 @@ exports.create = async(req, res, next) => {
     res.status(201).json({
       status: 201,
       message : "created",
-      token : req.body.token,
       data : {
         resData
       }
@@ -60,7 +58,6 @@ exports.join = async(req, res) => {
       await Room.findOneAndUpdate({_id : roomId}, {$push: { member: _id }})
       res.status(201).json({
         status: 201,
-        token: req.body.token,
         message : "Created"
       })
     } else {
@@ -98,7 +95,6 @@ exports.getList = async(req, res) => {
     res.status(200).json({
       status: 200,
       message : "OK",
-      token: req.body.token,
       list: data
     })
   } catch (error) {
@@ -114,7 +110,6 @@ exports.exit = async(req, res, next) => {
   try {
     const roomId = req.params.roomId;
     const room = await Room.findById(roomId).populate("head").populate("member");
-    // console.log(room)
 
     let userId = "";
     for(let i of room.member) {
@@ -135,7 +130,6 @@ exports.exit = async(req, res, next) => {
       res.status(200).json({
         status: 200,
         message : "OK",
-        token : req.body.token
       })
       return;
     }
@@ -147,7 +141,6 @@ exports.exit = async(req, res, next) => {
     res.status(200).json({
       status: 200,
       message : "OK",
-      token : req.body.token
     })
   } catch (error) {
     next(error)

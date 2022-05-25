@@ -30,7 +30,7 @@ const Home = () => {
           Authorization: localStorage.getItem("token")
         }
       })
-      localStorage.setItem("token", res.data.token);
+      console.log(res)
       setNickname(res.data.nickname)
     } catch (error) {
       if (error.response.status === 401) {
@@ -50,7 +50,6 @@ const Home = () => {
         }
       });
       if(res.status === 200) {
-        localStorage.setItem("token", res.data.token);
         setRoomList(res.data.list)
       }
     } catch (error) {
@@ -78,8 +77,6 @@ const Home = () => {
     await axios({url:`http://${HOST}/nickname`, data:data, method:"put", headers : {"Authorization" : localStorage.getItem("token")}})
       .then((res) => {
         if (res.status === 200) {
-          // console.log(res.data.token)
-          console.log(localStorage.getItem('token'))
           localStorage.setItem('token', res.data.token)
           setNickname(nicknameInput);
           setOpen(false);
@@ -117,7 +114,6 @@ const Home = () => {
         }
       })
       if(response.status === 201) {
-        localStorage.setItem("token", response.data.token);
         navigate(`/room/home/${roomId}`)
       }
       console.log(response)

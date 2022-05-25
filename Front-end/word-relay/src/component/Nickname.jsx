@@ -32,11 +32,12 @@ const Nickname = () => {
     }
     await axios.post("http://localhost:8080/nickname", data)
       .then((res) => {
-        // console.log(res)
+        console.log(res.data)
         if (res.status === 201) {
           localStorage.setItem('token', res.data.token)
-          window.location.href = "/home"
         }
+      }).then(() => {
+        window.location.reload()
       })
       .catch((err) => {
         if (err.message === "Network Error") {
