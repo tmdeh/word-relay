@@ -1,12 +1,13 @@
 import axios from "axios";
 import { HOST } from "../config";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { Button } from "./Button";
 import Loading from "./Loading";
 import Modal from "./Model";
 import { useNavigate } from "react-router-dom";
 import tokenExpired from "../expired";
+import socketIOClient from "socket.io-client"
 
 const Home = () => {
   const [nickname, setNickname] = useState("");
@@ -15,22 +16,19 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [open, setOpen] = useState(false);
 
+  const [currentSocket, setCurrentSocket] = useState();
+
   const navigate = useNavigate();
 
-  useEffect(() => {
-    getNickname();
-    getRoomList();
-  }, [])
 
 
-  const getNickname = async() => {
+  const getNickname = useCallback(async() => {
     try {
       const res = await axios.get(`http://${HOST}/nickname`, {
         headers: {
           Authorization: localStorage.getItem("token")
         }
       })
-      console.log(res)
       setNickname(res.data.nickname)
     } catch (error) {
       if (error.response.status === 401) {
@@ -38,11 +36,11 @@ const Home = () => {
         window.location.reload()
       }
     }
-  }
+  }, [navigate])
 
 
 
-  const getRoomList = async() => {
+  const getRoomList = useCallback(async() => {
     try {
       const res = await axios.get(`http://${HOST}/room/list`, {
         headers: {
@@ -59,7 +57,7 @@ const Home = () => {
       }
       console.log(error)
     }
-  }
+  }, [navigate])
 
   const onClickChangeNicknameButton = () => {
     setOpen(true)
@@ -113,6 +111,7 @@ const Home = () => {
           "Authorization" : localStorage.getItem("token")
         }
       })
+
       if(response.status === 201) {
         navigate(`/room/home/${roomId}`)
       }
@@ -129,6 +128,18 @@ const Home = () => {
   const close = () => {
     setOpen(false)
   }
+
+  useEffect(() => {
+    getNickname();
+    getRoomList();
+    setCurrentSocket(socketIOClient('localhost:8080'))
+  }, [getNickname, getRoomList])
+
+  useEffect(() => {
+    if(currentSocket) {
+      currentSocket.emit('init', {msg : "hello"})
+    }
+  }, [currentSocket])
 
   return (
     <div> 
@@ -157,7 +168,7 @@ const Home = () => {
             <Member>{i.member.length}</Member>/
             <Limit>{i.member_limit}</Limit>
           </Members>
-          <img src={i.has_password ? "lock2.svg" : "lock1.svg"}></img>
+          <img src={i.has_password ? "lock2.svg" : "lock1.svg"} alt="비밀번호"></img>
         </RoomItem>
         )}
       </RoomList>

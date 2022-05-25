@@ -5,7 +5,6 @@ import Home from './component/Home';
 import Room from './component/Room';
 import CreateRoom from './component/CreateRoom';
 import styled from "styled-components";
-import { useEffect } from 'react';
 
 
 

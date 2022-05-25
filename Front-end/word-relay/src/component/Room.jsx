@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 
@@ -22,7 +22,7 @@ const Room = () => {
 
   const navigate = useNavigate();
 
-  const getRoomInfo = async () => {
+  const getRoomInfo = useCallback(async () => {
     try {
       setLoading(true);
       const response = await axios.get(`http://${HOST}/room/${id}`, {
@@ -44,23 +44,22 @@ const Room = () => {
       }
       console.log(error)
     }
-  }
+  }, [id, navigate])
   
-  const getNickname = async() => {
+  const getNickname = useCallback(async() => {
     const response = await axios.get(`http://${HOST}/nickname`, {
       headers: {
         Authorization: localStorage.getItem("token")
       }
     });
     setNickname(response.data.nickname)
-    console.log(response)
-  }
+  }, [])
 
   
   useEffect(() => {
     getRoomInfo();
     getNickname();
-  }, [])
+  }, [getRoomInfo, getNickname])
 
 
   const onStartButtonClick = () => {
@@ -76,7 +75,9 @@ const Room = () => {
             Authorization: localStorage.getItem("token")
           }
         })
-        navigate("/home");
+        if(response.status === 200) {
+          navigate("/home");
+        }
       }
     } catch (error) {
       if (error.response.status === 401) {
@@ -110,7 +111,7 @@ const Room = () => {
               <Member key={i._id}>
                 <MemberName>{i.nickname}</MemberName>
                 <Star>
-                  {i.nickname === head ? <img src="/star.svg" /> : null}
+                  {i.nickname === head ? <img src="/star.svg" alt="방장"/> : null}
                 </Star>
               </Member>)}
             {[...Array(memberLimit-memberList.length)].map((v,i) => 
