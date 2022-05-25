@@ -35,8 +35,9 @@ const CreateRoom = () => {
     }).then((res) => {
       if(res.status === 201) {
         console.log(res.data)
-        // localStorage.setItem('token', res.data.data.token')
-        navigate('/room/' + res.data.data.resData._id)
+        localStorage.setItem('token', res.data.data.token);
+        navigate('/room/home/' + res.data.data.resData._id)
+        setLoading(false)
       }
     }).catch((error) => {
       console.log(error.response)

@@ -30,10 +30,10 @@ const Room = () => {
           Authorization: localStorage.getItem("token")
         }
       });
+      console.log(response.data)
       setHead(response.data.roomInfo.head.nickname);
       setTitle(response.data.roomInfo.name);
       setMemberList(response.data.roomInfo.member);
-      setNickname(response.data.nickname);
       setMemberLimit(response.data.roomInfo.member_limit);
       // console.log(response.data);
       setLoading(false);
@@ -46,10 +46,20 @@ const Room = () => {
     }
   }
   
+  const getNickname = async() => {
+    const response = await axios.get(`http://${HOST}/nickname`, {
+      headers: {
+        Authorization: localStorage.getItem("token")
+      }
+    });
+    setNickname(response.data.nickname)
+    console.log(response)
+  }
 
   
   useEffect(() => {
     getRoomInfo();
+    getNickname();
   }, [])
 
 
@@ -101,7 +111,7 @@ const Room = () => {
               <Member key={i._id}>
                 <MemberName>{i.nickname}</MemberName>
                 <Star>
-                  {nickname === head ? <img src="/star.svg" /> : null}
+                  {i.nickname === head ? <img src="/star.svg" /> : null}
                 </Star>
               </Member>)}
             {[...Array(memberLimit-memberList.length)].map((v,i) => 

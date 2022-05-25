@@ -19,6 +19,7 @@ exports.get = async(req, res, next) => {
 
 exports.create = async(req, res, next) => {
   try {
+    console.log(req.body.nickname)
     let { _id } = await User.findOne({nickname: req.body.nickname})
 
     if(req.body.title === "" || req.hasPassword && req.password === "") {

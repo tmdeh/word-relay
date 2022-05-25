@@ -35,6 +35,7 @@ const Home = () => {
     } catch (error) {
       if (error.response.status === 401) {
         tokenExpired(navigate)
+        window.location.reload()
       }
     }
   }
@@ -55,6 +56,7 @@ const Home = () => {
     } catch (error) {
       if (error.response.status === 401) {
         tokenExpired(navigate)
+        window.location.reload()
       }
       console.log(error)
     }
@@ -76,6 +78,8 @@ const Home = () => {
     await axios({url:`http://${HOST}/nickname`, data:data, method:"put", headers : {"Authorization" : localStorage.getItem("token")}})
       .then((res) => {
         if (res.status === 200) {
+          // console.log(res.data.token)
+          console.log(localStorage.getItem('token'))
           localStorage.setItem('token', res.data.token)
           setNickname(nicknameInput);
           setOpen(false);
