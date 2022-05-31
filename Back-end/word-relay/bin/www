@@ -36,11 +36,7 @@ app.io = require("socket.io")(server, {
 })
 
 
-app.io.on('connection', (socket) => {
-  socket.on('init', (msg) => {
-    console.log(msg)
-  })
-})
+
 
 /**
  * Normalize a port into a number, string, or false.

@@ -8,13 +8,17 @@ import Modal from "./Model";
 import { useNavigate } from "react-router-dom";
 import tokenExpired from "../expired";
 import socketIOClient from "socket.io-client"
+import join from "../request/join";
 
 const Home = () => {
   const [nickname, setNickname] = useState("");
   const [nicknameInput, setNicknameInput] = useState("");
+  const [passwordInput, setPasswordInput] = useState("");
   const [roomList, setRoomList] = useState([]);
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+  const [roomId, setRoomId] = useState(0);
 
   const [currentSocket, setCurrentSocket] = useState();
 
@@ -101,28 +105,15 @@ const Home = () => {
   }
 
   const onClickRoom = async(e) => {
-    const roomId = e.currentTarget.id;
     setIsLoading(true)
-    try {
-      const response = await axios({
-        url : `http://${HOST}/room/${roomId}`,
-        method: "POST",
-        headers : {
-          "Authorization" : localStorage.getItem("token")
-        }
-      })
-
-      if(response.status === 201) {
-        navigate(`/room/home/${roomId}`)
-      }
-      console.log(response)
-    } catch (error) {
-      if (error.response.status === 401) {
-        tokenExpired(navigate)
-      }
-      console.log(error)
-    }
+    await join(e.currentTarget.id, null, navigate)
     setIsLoading(false)
+  }
+
+  const onClickPasswordRoom = (e) => {
+    setPasswordModalOpen(true)
+    console.log(e.currentTarget.id)
+    setRoomId(e.currentTarget.id)
   }
 
   const close = () => {
@@ -158,10 +149,17 @@ const Home = () => {
           <Button color={"#EA9797"} onClick={close}>취소</Button>
         </ModalContainer>
       </Modal>
+      <Modal open={passwordModalOpen} close={() => setPasswordModalOpen(false)} header={"비밀번호 입력"}>
+        <ModalContainer>
+          <NicknameInput placeholder="비밀번호" onChange={e => setPasswordInput(e.target.value)}></NicknameInput>
+          <Button color={"#99EA97"} onClick={() => join(roomId, passwordInput, navigate)}>입장</Button>
+          <Button color={"#EA9797"} onClick={() => setPasswordModalOpen(false)}>취소</Button>
+        </ModalContainer>
+      </Modal>
       <Loading isLoading={isLoading} type="spin" color="99EA97"></Loading>
       <RoomList>
         {roomList.map(i => 
-        <RoomItem key={i._id} onClick={onClickRoom} id={i._id}>
+        <RoomItem key={i._id} onClick={i.has_password ? onClickPasswordRoom : onClickRoom} id={i._id}>
           <Title>{i.name}</Title>
           <Head>{i.head.nickname}</Head>
           <Members>
