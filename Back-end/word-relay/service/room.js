@@ -1,3 +1,4 @@
+const app = require('../app');
 const Room = require('../database/model/room')
 const User = require('../database/model/user')
 
@@ -53,7 +54,7 @@ exports.create = async(req, res, next) => {
 exports.join = async(req, res, next) => {
   try {
     const roomId = req.params.roomId;
-    if(!passwordCheck(roomId, req.body.hasPassword, req.body.password)) {
+    if(await passwordCheck(roomId, req.body.hasPassword, req.body.password)) {
       const {_id} = await User.findOne({nickname : req.body.nickname});
       const room = await Room.findById(roomId)
       if(room.member.length >= room.member_limit) {
@@ -61,7 +62,7 @@ exports.join = async(req, res, next) => {
         error.status = 419;
         throw error
       }
-      await Room.findOneAndUpdate({_id : roomId}, {$push: { member: _id }})
+      // await Room.findOneAndUpdate({_id : roomId}, {$push: { member: _id }})
       res.status(201).json({
         status: 201,
         message : "Created"
@@ -80,7 +81,6 @@ exports.join = async(req, res, next) => {
 const passwordCheck = async(roomId, hasPassword, userPassword) => {
   if(hasPassword) { //비밀번호가 존재할 경우
     const {password} = await Room.findById(roomId)
-    console.log(password === userPassword)
     if(password === userPassword) {
       return true;
     } else {

@@ -2,7 +2,7 @@ const { default: axios } = require("axios")
 const { HOST } = require("../config")
 const { default: tokenExpired } = require("../expired")
 
-module.exports = async(roomId, password, navigate) => {
+module.exports = async(roomId, password, navigate, socket) => {
   try {
     const response = await axios({
       url : `http://${HOST}/room/${roomId}`,
@@ -17,7 +17,9 @@ module.exports = async(roomId, password, navigate) => {
     })
 
     if(response.status === 201) {
-      navigate(`/room/home/${roomId}`)
+      console.log(socket)
+      socket.emit('join room')
+      // navigate(`/room/home/${roomId}`)
     }
     console.log(response)
   } catch (error) {

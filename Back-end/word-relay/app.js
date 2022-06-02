@@ -12,7 +12,8 @@ const {verify} = require('./lib/jwt')
 
 var app = express();
 
-const dbconnect = require('./database/connect')
+const dbconnect = require('./database/connect');
+const { socket } = require('./socket/connection');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -23,11 +24,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cors())
-dbconnect()
+app.use(cors());
+dbconnect();
 
 app.use('/nickname', nickname);
-app.use('/room', verify, room)
+app.use('/room', verify, room);
 
 
 // catch 404 and forward to error handler

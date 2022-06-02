@@ -7,7 +7,7 @@ import Loading from "./Loading";
 import Modal from "./Model";
 import { useNavigate } from "react-router-dom";
 import tokenExpired from "../expired";
-import socketIOClient from "socket.io-client"
+import io from "socket.io-client"
 import join from "../request/join";
 
 const Home = () => {
@@ -20,7 +20,7 @@ const Home = () => {
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
   const [roomId, setRoomId] = useState(0);
 
-  const [currentSocket, setCurrentSocket] = useState();
+  const [socket, setSocket] = useState();
 
   const navigate = useNavigate();
 
@@ -106,7 +106,7 @@ const Home = () => {
 
   const onClickRoom = async(e) => {
     setIsLoading(true)
-    await join(e.currentTarget.id, null, navigate)
+    await join(e.currentTarget.id, null, navigate, socket)
     setIsLoading(false)
   }
 
@@ -123,14 +123,18 @@ const Home = () => {
   useEffect(() => {
     getNickname();
     getRoomList();
-    setCurrentSocket(socketIOClient('localhost:8080'))
   }, [getNickname, getRoomList])
 
   useEffect(() => {
-    if(currentSocket) {
-      currentSocket.emit('init', {msg : "hello"})
+    setSocket(io("localhost:8080"))
+}, [])
+
+useEffect(() => {
+    if(socket) {
+      socket.emit("init", {msg: "메시지"})
     }
-  }, [currentSocket])
+}, [socket])
+
 
   return (
     <div> 
@@ -152,7 +156,7 @@ const Home = () => {
       <Modal open={passwordModalOpen} close={() => setPasswordModalOpen(false)} header={"비밀번호 입력"}>
         <ModalContainer>
           <NicknameInput placeholder="비밀번호" onChange={e => setPasswordInput(e.target.value)}></NicknameInput>
-          <Button color={"#99EA97"} onClick={() => join(roomId, passwordInput, navigate)}>입장</Button>
+          <Button color={"#99EA97"} onClick={() => join(roomId, passwordInput, navigate, socket)}>입장</Button>
           <Button color={"#EA9797"} onClick={() => setPasswordModalOpen(false)}>취소</Button>
         </ModalContainer>
       </Modal>

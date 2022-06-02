@@ -1,7 +1,6 @@
-const app = require('../app');
-
-app.io.on('connection', (socket) => {
-  socket.on('init', (msg) => {
-    console.log(msg)
+exports.init = (io) => {
+  console.log('Init socket.io');
+  io.on('connection', (socket) => {
+    console.log('connected');
   })
-})
+}
