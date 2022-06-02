@@ -18,8 +18,8 @@ module.exports = async(roomId, password, navigate, socket) => {
 
     if(response.status === 201) {
       console.log(socket)
-      socket.emit('join room')
-      // navigate(`/room/home/${roomId}`)
+      socket.emit('join', {roomId: roomId})
+      navigate(`/room/home/${roomId}`)
     }
     console.log(response)
   } catch (error) {

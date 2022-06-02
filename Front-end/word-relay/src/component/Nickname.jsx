@@ -5,11 +5,13 @@ import styled from "styled-components";
 import { Button } from "./Button";
 import { useNavigate } from "react-router-dom";
 import tokenExpired from "../expired";
+import { useSetRecoilState } from "recoil";
+import tokenState from "../recoil/token"
 
 const Nickname = () => {
   const [nickname, setNickname] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  
+  const setToken = useSetRecoilState(tokenState);
 
   const navigate = useNavigate();
 
@@ -34,7 +36,8 @@ const Nickname = () => {
       .then((res) => {
         console.log(res.data)
         if (res.status === 201) {
-          localStorage.setItem('token', res.data.token)
+          // localStorage.setItem('token', res.data.token)
+          setToken(res.data.token)
         }
       }).then(() => {
         window.location.reload()

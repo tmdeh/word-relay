@@ -62,7 +62,7 @@ exports.join = async(req, res, next) => {
         error.status = 419;
         throw error
       }
-      // await Room.findOneAndUpdate({_id : roomId}, {$push: { member: _id }})
+      await Room.findOneAndUpdate({_id : roomId}, {$push: { member: _id }})
       res.status(201).json({
         status: 201,
         message : "Created"

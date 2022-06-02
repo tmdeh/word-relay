@@ -1,16 +1,18 @@
 import axios from "axios";
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
 
 import { HOST } from "../config";
 import tokenExpired from "../expired";
+import tokenState from "../recoil/token";
 import Button from "./Button";
 import Loading from "./Loading";
 
 
 const Room = () => {
-
+  const [token, setToken] = useRecoilState(tokenState)
   const { id } = useParams();
 
   const [loading, setLoading] = useState(false);
@@ -27,7 +29,7 @@ const Room = () => {
       setLoading(true);
       const response = await axios.get(`http://${HOST}/room/${id}`, {
         headers: {
-          Authorization: localStorage.getItem("token")
+          Authorization: token
         }
       });
       console.log(response.data)
@@ -47,9 +49,10 @@ const Room = () => {
   }, [id, navigate])
   
   const getNickname = useCallback(async() => {
+    console.log(token)
     const response = await axios.get(`http://${HOST}/nickname`, {
       headers: {
-        Authorization: localStorage.getItem("token")
+        Authorization: token
       }
     });
     setNickname(response.data.nickname)
@@ -63,7 +66,7 @@ const Room = () => {
 
 
   const onStartButtonClick = () => {
-
+    
   }
 
   const onExitButtonClick = async() => {
@@ -72,7 +75,7 @@ const Room = () => {
       if(con) {
         const response = await axios.delete(`http://${HOST}/room/${id}`,{
           headers: {
-            Authorization: localStorage.getItem("token")
+            Authorization: token
           }
         })
         if(response.status === 200) {
@@ -82,7 +85,7 @@ const Room = () => {
     } catch (error) {
       if (error.response.status === 401) {
         alert("토큰 만료 메인으로 돌아갑니다.");
-        localStorage.removeItem("token");
+        setToken("");
         window.location.reload();
       }
       else if(error.response.status === 400) {

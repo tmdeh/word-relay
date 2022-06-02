@@ -9,8 +9,12 @@ import { useNavigate } from "react-router-dom";
 import tokenExpired from "../expired";
 import io from "socket.io-client"
 import join from "../request/join";
+import tokenState from "../recoil/token";
+import { useRecoilState } from "recoil";
+import useNickname from "../request/useNickname";
 
 const Home = () => {
+  const [token, setToken] = useRecoilState(tokenState)
   const [nickname, setNickname] = useState("");
   const [nicknameInput, setNicknameInput] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
@@ -23,25 +27,6 @@ const Home = () => {
   const [socket, setSocket] = useState();
 
   const navigate = useNavigate();
-
-
-
-  const getNickname = useCallback(async() => {
-    try {
-      const res = await axios.get(`http://${HOST}/nickname`, {
-        headers: {
-          Authorization: localStorage.getItem("token")
-        }
-      })
-      setNickname(res.data.nickname)
-    } catch (error) {
-      if (error.response.status === 401) {
-        tokenExpired(navigate)
-        window.location.reload()
-      }
-    }
-  }, [navigate])
-
 
 
   const getRoomList = useCallback(async() => {
@@ -121,19 +106,10 @@ const Home = () => {
   }
 
   useEffect(() => {
-    getNickname();
+    setNickname(useNickname)
     getRoomList();
-  }, [getNickname, getRoomList])
-
-  useEffect(() => {
     setSocket(io("localhost:8080"))
-}, [])
-
-useEffect(() => {
-    if(socket) {
-      socket.emit("init", {msg: "메시지"})
-    }
-}, [socket])
+  }, [getRoomList])
 
 
   return (
