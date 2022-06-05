@@ -51,7 +51,13 @@ const Home = () => {
 
   const onClickRoom = async(e) => {
     setIsLoading(true)
-    await join(e.currentTarget.id, null, navigate, socket)
+    const res = await join(token, e.currentTarget.id, null, navigate, socket)
+    if(res === 401) {
+      setToken("")
+      window.location.reload();
+    } else if (res === 419) {
+      alert("빈자리가 없습니다.");
+    }
     setIsLoading(false)
   }
 
@@ -59,6 +65,20 @@ const Home = () => {
     setPasswordModalOpen(true)
     console.log(e.currentTarget.id)
     setRoomId(e.currentTarget.id)
+  }
+
+  const joinPasswordRoom = async() => {
+    const res = await join(token, roomId, passwordInput, navigate, socket)
+    if(res === 400) {
+      alert("비밀번호가 일치하지 않습니다.");
+    }
+    else if(res === 401) {
+      setToken("")
+      window.location.reload();
+    } else if (res === 419) {
+      alert("빈자리가 없습니다.");
+      setPasswordModalOpen(false)
+    }
   }
 
   const close = () => {
@@ -93,7 +113,6 @@ const Home = () => {
           <Button color={"#99EA97"} onClick={() => setOpen(true)}>닉네임 변경</Button>
           <Button color={"#99EA97"} onClick = {onClickCreateRoomButton}>방 만들기</Button>
         </Buttons>
-        {/* <button onClick={logoutClick}>로그아웃</button> */}
       </NavigationBar>
       <Modal open={open} close={close} header={"닉네임 변경"}>
         <ModalContainer>
@@ -105,7 +124,7 @@ const Home = () => {
       <Modal open={passwordModalOpen} close={() => setPasswordModalOpen(false)} header={"비밀번호 입력"}>
         <ModalContainer>
           <NicknameInput placeholder="비밀번호" onChange={e => setPasswordInput(e.target.value)}></NicknameInput>
-          <Button color={"#99EA97"} onClick={() => join(roomId, passwordInput, navigate, socket)}>입장</Button>
+          <Button color={"#99EA97"} onClick={joinPasswordRoom}>입장</Button>
           <Button color={"#EA9797"} onClick={() => setPasswordModalOpen(false)}>취소</Button>
         </ModalContainer>
       </Modal>
