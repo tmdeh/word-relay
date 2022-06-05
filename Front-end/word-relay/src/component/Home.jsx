@@ -1,17 +1,16 @@
-import axios from "axios";
-import { HOST } from "../config";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Button } from "./Button";
 import Loading from "./Loading";
 import Modal from "./Model";
 import { useNavigate } from "react-router-dom";
-import tokenExpired from "../expired";
 import io from "socket.io-client"
 import join from "../request/join";
 import tokenState from "../recoil/token";
 import { useRecoilState } from "recoil";
-import useNickname from "../request/useNickname";
+import getRoomList from "../request/getList";
+import getNickname from "../request/getNickname";
+import updateNickname from "../request/updateNickname";
 
 const Home = () => {
   const [token, setToken] = useRecoilState(tokenState)
@@ -28,30 +27,6 @@ const Home = () => {
 
   const navigate = useNavigate();
 
-
-  const getRoomList = useCallback(async() => {
-    try {
-      const res = await axios.get(`http://${HOST}/room/list`, {
-        headers: {
-          Authorization: localStorage.getItem("token")
-        }
-      });
-      if(res.status === 200) {
-        setRoomList(res.data.list)
-      }
-    } catch (error) {
-      if (error.response.status === 401) {
-        tokenExpired(navigate)
-        window.location.reload()
-      }
-      console.log(error)
-    }
-  }, [navigate])
-
-  const onClickChangeNicknameButton = () => {
-    setOpen(true)
-  }
-
   const onClickCreateRoomButton = () => {
     navigate("/room/create");
   }
@@ -61,27 +36,12 @@ const Home = () => {
     let data = {
       newNickname: nicknameInput
     }
-    await axios({url:`http://${HOST}/nickname`, data:data, method:"put", headers : {"Authorization" : localStorage.getItem("token")}})
-      .then((res) => {
-        if (res.status === 200) {
-          localStorage.setItem('token', res.data.token)
-          setNickname(nicknameInput);
-          setOpen(false);
-        }
-      })
-      .catch((err) => {
-        if (err.message === "Network Error") {
-          alert("네트워크 연결을 확인하세요")
-        } else {
-          if (err.response.data.status === 400 || err.response.data.message === "이미 존재하는 닉네임입니다.") {
-            alert("이미 사용중인 닉네임 입니다.")
-          } else if(err.response.data.status === 500) {
-            alert("서버 오류 발생")
-          } else {
-            alert("알수 없는 오류 발생")
-          }
-        }
-      })
+    const res = await updateNickname(token, data);
+    if(res.status === 200) {
+      setNickname(res.newNickname);
+      setToken(res.token)
+      setOpen(false)
+    }
     setIsLoading(false);
   }
 
@@ -106,10 +66,23 @@ const Home = () => {
   }
 
   useEffect(() => {
-    setNickname(useNickname)
-    getRoomList();
+    getRoomList(token).then(res => {
+      if(res === 401) {
+        setToken("")
+        window.location.reload();
+      }
+      setRoomList(res);
+    })
+
+    getNickname(token).then(res => {
+      if(res === 401) {
+        setToken("")
+        window.location.reload();
+      }
+      setNickname(res)
+    })
     setSocket(io("localhost:8080"))
-  }, [getRoomList])
+  }, [token, setToken])
 
 
   return (
@@ -117,7 +90,7 @@ const Home = () => {
       <NavigationBar>
         <NameDiv>{nickname}</NameDiv>
         <Buttons>
-          <Button color={"#99EA97"} onClick={onClickChangeNicknameButton}>닉네임 변경</Button>
+          <Button color={"#99EA97"} onClick={() => setOpen(true)}>닉네임 변경</Button>
           <Button color={"#99EA97"} onClick = {onClickCreateRoomButton}>방 만들기</Button>
         </Buttons>
         {/* <button onClick={logoutClick}>로그아웃</button> */}

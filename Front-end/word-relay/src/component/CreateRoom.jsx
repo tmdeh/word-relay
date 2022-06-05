@@ -1,9 +1,9 @@
-import axios from "axios";
 import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
 import styled from "styled-components";
-import { HOST } from "../config";
-import tokenExpired from "../expired";
+import tokenState from "../recoil/token";
+import createRoom from "../request/createRoom";
 import Button from './Button'
 import Loading from "./Loading";
 
@@ -13,6 +13,7 @@ const CreateRoom = () => {
   const [title, setTitle] = useState("");
   const [password, setPassword] = useState("");
   const [memberLimit, setMemberLimit] = useState(2);
+  const [token, setToken] = useRecoilState(tokenState)
 
   const navigate = useNavigate();
 
@@ -25,28 +26,11 @@ const CreateRoom = () => {
       memberLimit: memberLimit
     }
     setLoading(true)
-    await axios({
-      url : `http://${HOST}/room`,
-      method: 'post',
-      data: data,
-      headers : {
-        Authorization: localStorage.getItem("token")
-      }
-    }).then((res) => {
-      if(res.status === 201) {
-        console.log(res.data)
-        navigate('/room/home/' + res.data.data.resData._id)
-        setLoading(false)
-      }
-    }).catch((error) => {
-      console.log(error.response)
-      if(error.response.status === 401) {
-        tokenExpired(navigate)
-      }
-      if(error.response.status===400) {
-        alert(error.response.data.message)
-      }
-    })
+    const res = await createRoom(token, data, navigate);
+    if(res === 401) {
+      setToken("");
+      window.location.reload();
+    }
     setLoading(false)  
   }
 

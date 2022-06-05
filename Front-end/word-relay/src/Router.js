@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import Room from "./component/Room";
@@ -12,7 +12,7 @@ import tokenState from "./recoil/token"
 const Router = () => {
 
   const token = useRecoilValue(tokenState)
-
+  
   return (
     <Routes>
     {token !== "" ? (
