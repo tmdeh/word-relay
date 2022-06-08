@@ -1,9 +1,10 @@
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import tokenState from "../recoil/token";
 import createRoom from "../request/createRoom";
+import { SocketContext } from "../socket/socket";
 import Button from './Button'
 import Loading from "./Loading";
 
@@ -14,6 +15,7 @@ const CreateRoom = () => {
   const [password, setPassword] = useState("");
   const [memberLimit, setMemberLimit] = useState(2);
   const [token, setToken] = useRecoilState(tokenState)
+  const socket = useContext(SocketContext);
 
   const navigate = useNavigate();
 
@@ -26,7 +28,7 @@ const CreateRoom = () => {
       memberLimit: memberLimit
     }
     setLoading(true)
-    const res = await createRoom(token, data, navigate);
+    const res = await createRoom(token, data, navigate, socket);
     if(res === 401) {
       setToken("");
       window.location.reload();

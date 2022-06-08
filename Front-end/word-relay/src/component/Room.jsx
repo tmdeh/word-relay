@@ -1,18 +1,20 @@
 import axios from "axios";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import styled from "styled-components";
 
 import { HOST } from "../config";
 import tokenExpired from "../expired";
 import tokenState from "../recoil/token";
+import { SocketContext } from "../socket/socket";
 import Button from "./Button";
 import Loading from "./Loading";
 
 
 const Room = () => {
   const [token, setToken] = useRecoilState(tokenState)
+  const socket = useContext(SocketContext)
   const { id } = useParams();
 
   const [loading, setLoading] = useState(false);
@@ -23,6 +25,11 @@ const Room = () => {
   const [memberList, setMemberList] = useState([]);
 
   const navigate = useNavigate();
+
+
+  socket.on("joined", (member) => {
+    console.log(member)
+  })
 
   const getRoomInfo = useCallback(async () => {
     try {
@@ -37,7 +44,6 @@ const Room = () => {
       setTitle(response.data.roomInfo.name);
       setMemberList(response.data.roomInfo.member);
       setMemberLimit(response.data.roomInfo.member_limit);
-      // console.log(response.data);
       setLoading(false);
     } catch (error) {
       if (error.response.status === 401) {
@@ -46,17 +52,16 @@ const Room = () => {
       }
       console.log(error)
     }
-  }, [id, navigate])
+  }, [id, navigate, token])
   
   const getNickname = useCallback(async() => {
-    console.log(token)
     const response = await axios.get(`http://${HOST}/nickname`, {
       headers: {
         Authorization: token
       }
     });
     setNickname(response.data.nickname)
-  }, [])
+  }, [token])
 
   
   useEffect(() => {
@@ -68,6 +73,7 @@ const Room = () => {
   const onStartButtonClick = () => {
     
   }
+
 
   const onExitButtonClick = async() => {
     try {
@@ -94,7 +100,7 @@ const Room = () => {
       } else {
         alert("오류 발생")
       }
-      console.log(error)
+      console.error(error)
     }
   }
 

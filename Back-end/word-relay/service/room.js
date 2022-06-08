@@ -54,9 +54,14 @@ exports.create = async(req, res, next) => {
 exports.join = async(req, res, next) => {
   try {
     const roomId = req.params.roomId;
+    const room = await Room.findById(roomId)
+    if(room === null) {
+      let err = new Error("없는 방입니다.");
+      err.status = 420;
+      throw err;
+    }
     if(await passwordCheck(roomId, req.body.hasPassword, req.body.password)) {
       const {_id} = await User.findOne({nickname : req.body.nickname});
-      const room = await Room.findById(roomId)
       if(room.member.length >= room.member_limit) {
         let error = new Error("빈자리가 없습니다.");
         error.status = 419;
@@ -80,7 +85,8 @@ exports.join = async(req, res, next) => {
 
 const passwordCheck = async(roomId, hasPassword, userPassword) => {
   if(hasPassword) { //비밀번호가 존재할 경우
-    const {password} = await Room.findById(roomId)
+    console.log(roomId)
+    const { password } = await Room.findById(roomId)
     if(password === userPassword) {
       return true;
     } else {

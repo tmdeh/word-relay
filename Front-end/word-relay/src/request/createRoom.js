@@ -2,7 +2,7 @@ import axios from "axios"
 import { HOST } from "../config"
 
 
-export default async(token, data, navigate) => {
+export default async(token, data, navigate, socket) => {
   try {
     const res = await axios({
       url : `http://${HOST}/room`,
@@ -13,7 +13,8 @@ export default async(token, data, navigate) => {
       }
     })
     if(res.status === 201) {
-      navigate('/room/home/' + res.data.data.resData._id)
+      socket.emit("join", ({roomId : res.data.data.resData._id}));
+      navigate('/room/home/' + res.data.data.resData._id);
     }
   } catch (error) {
     console.log(error.response)

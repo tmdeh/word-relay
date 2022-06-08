@@ -16,14 +16,15 @@ module.exports = async(token, roomId, password, navigate, socket) => {
         }
       })
       if(response.status === 201) {
-        console.log(socket)
+        console.log(socket.id)
         socket.emit('join', {roomId: roomId})
         navigate(`/room/home/${roomId}`)
-        return
+        return 201
       }
     }
     return 401
   } catch (error) {
+    console.error(error)
     return error.response.status;
   }
 }

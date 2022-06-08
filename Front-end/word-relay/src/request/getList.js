@@ -10,6 +10,7 @@ const getRoomList = async(token) => {
           Authorization: token
         }
       });
+      console.log(res)
       if(res.status === 200) {
         return res.data.list;
       }
@@ -19,7 +20,7 @@ const getRoomList = async(token) => {
     if (error.response.status === 401) {
       return 401;
     }
-    console.log(error)
+    console.error(error)
   }
 }
 

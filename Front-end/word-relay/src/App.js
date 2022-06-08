@@ -2,13 +2,18 @@ import './App.css';
 import styled from "styled-components";
 import {RecoilRoot} from 'recoil'
 import Router from './Router';
+import { SocketProvider } from './socket/socket'; //모든 하위 컴포넌트에서 socket을 사용할 수 있도록
+
 
 
 function App() {
+  
   return(
     <AppDiv>
       <RecoilRoot>
-        <Router />
+        <SocketProvider>
+          <Router />
+        </SocketProvider>
       </RecoilRoot>
     </AppDiv>
   )

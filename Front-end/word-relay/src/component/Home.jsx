@@ -1,16 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
+
 import { Button } from "./Button";
 import Loading from "./Loading";
 import Modal from "./Model";
 import { useNavigate } from "react-router-dom";
-import io from "socket.io-client"
 import join from "../request/join";
 import tokenState from "../recoil/token";
-import { useRecoilState } from "recoil";
+import { useRecoilState} from "recoil";
 import getRoomList from "../request/getList";
 import getNickname from "../request/getNickname";
 import updateNickname from "../request/updateNickname";
+import { SocketContext } from "../socket/socket";
+
 
 const Home = () => {
   const [token, setToken] = useRecoilState(tokenState)
@@ -23,7 +25,7 @@ const Home = () => {
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
   const [roomId, setRoomId] = useState(0);
 
-  const [socket, setSocket] = useState();
+  const socketClient = useContext(SocketContext);
 
   const navigate = useNavigate();
 
@@ -51,12 +53,16 @@ const Home = () => {
 
   const onClickRoom = async(e) => {
     setIsLoading(true)
-    const res = await join(token, e.currentTarget.id, null, navigate, socket)
-    if(res === 401) {
+    const res = await join(token, e.currentTarget.id, null, navigate, socketClient)
+    if (res === 401) {
       setToken("")
       window.location.reload();
     } else if (res === 419) {
       alert("빈자리가 없습니다.");
+    } else if (res === 420) {
+      alert("없는 방입니다.");
+    } else if (res === 500) {
+      alert("서버 오류")
     }
     setIsLoading(false)
   }
@@ -68,7 +74,7 @@ const Home = () => {
   }
 
   const joinPasswordRoom = async() => {
-    const res = await join(token, roomId, passwordInput, navigate, socket)
+    const res = await join(token, roomId, passwordInput, navigate, socketClient)
     if(res === 400) {
       alert("비밀번호가 일치하지 않습니다.");
     }
@@ -78,6 +84,9 @@ const Home = () => {
     } else if (res === 419) {
       alert("빈자리가 없습니다.");
       setPasswordModalOpen(false)
+    } else if (res === 420) {
+      alert("없는 방입니다.");
+      setPasswordModalOpen(false);
     }
   }
 
@@ -86,6 +95,11 @@ const Home = () => {
   }
 
   useEffect(() => {
+
+    if(token === "") {
+      window.location.reload();
+    }
+
     getRoomList(token).then(res => {
       if(res === 401) {
         setToken("")
@@ -101,8 +115,27 @@ const Home = () => {
       }
       setNickname(res)
     })
-    setSocket(io("localhost:8080"))
   }, [token, setToken])
+
+  
+  // useEffect(() => {
+  //   const socket = socketIOClient("localhost:8080")
+  //   socket.on("connect", () => {
+  //     console.log(socket)
+  //     setSocket(toJSON(socket))
+  //   })
+  //   socket.on("disconnect", () => {
+  //     console.log("연결 끊김")
+  //   })
+  // }, [setSocket])
+  
+
+  useEffect(() => {
+
+    // return () => {
+    //   socketClient.disconnect();
+    // }
+  }, []);
 
 
   return (

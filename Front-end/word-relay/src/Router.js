@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import Room from "./component/Room";
@@ -6,13 +6,23 @@ import CreateRoom from "./component/CreateRoom";
 import Nickname from "./component/Nickname";
 import Home from "./component/Home";
 import tokenState from "./recoil/token"
+import { SocketContext } from "./socket/socket";
 
 
 
 const Router = () => {
 
-  const token = useRecoilValue(tokenState)
-  
+  const token = useRecoilValue(tokenState);
+  const socket = useContext(SocketContext);
+
+  useEffect(() => {
+    return () => {
+      if(socket) {
+        // socket.disconnect()
+      }
+    };
+  })
+
   return (
     <Routes>
     {token !== "" ? (
