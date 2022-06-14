@@ -13,7 +13,6 @@ const {verify} = require('./lib/jwt')
 var app = express();
 
 const dbconnect = require('./database/connect');
-const { socket } = require('./socket/connection');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

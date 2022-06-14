@@ -19,7 +19,6 @@ exports.get = async(req, res, next) => {
 
 exports.create = async(req, res, next) => {
   try {
-    console.log(req.body.nickname)
     let { _id } = await User.findOne({nickname: req.body.nickname})
 
     if(req.body.title === "" || req.hasPassword && req.password === "") {
@@ -85,7 +84,6 @@ exports.join = async(req, res, next) => {
 
 const passwordCheck = async(roomId, hasPassword, userPassword) => {
   if(hasPassword) { //비밀번호가 존재할 경우
-    console.log(roomId)
     const { password } = await Room.findById(roomId)
     if(password === userPassword) {
       return true;
@@ -111,7 +109,7 @@ exports.getList = async(req, res) => {
       list: data
     })
   } catch (error) {
-    console.log(error)
+    console.error(error)
     res.status(500).json({
       status : 500,
       message : "서버에 문제 발생"
@@ -126,7 +124,6 @@ exports.exit = async(req, res, next) => {
 
     let userId = "";
     for(let i of room.member) {
-      console.log(req.body.nickname)
       if(i.nickname === req.body.nickname) {
         userId = i._id;
       }

@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import tokenExpired from "../expired";
 import { useSetRecoilState } from "recoil";
 import tokenState from "../recoil/token"
+import { HOST } from "../config";
 
 const Nickname = () => {
   const [nickname, setNickname] = useState("");
@@ -32,7 +33,7 @@ const Nickname = () => {
     let data = {
       nickname: nickname
     }
-    await axios.post("http://localhost:8080/nickname", data)
+    await axios.post(`http://${HOST}/nickname`, data)
       .then((res) => {
         console.log(res.data)
         if (res.status === 201) {

@@ -3,6 +3,7 @@ const { HOST } = require("../config")
 
 module.exports = async(token, roomId, password, navigate, socket) => {
   try {
+    console.log("socket", socket)
     if(token !== "") {
       const response = await axios({
         url : `http://${HOST}/room/${roomId}`,

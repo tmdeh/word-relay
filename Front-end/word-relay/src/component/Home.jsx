@@ -95,11 +95,9 @@ const Home = () => {
   }
 
   useEffect(() => {
-
     if(token === "") {
       window.location.reload();
     }
-
     getRoomList(token).then(res => {
       if(res === 401) {
         setToken("")
@@ -117,26 +115,11 @@ const Home = () => {
     })
   }, [token, setToken])
 
-  
-  // useEffect(() => {
-  //   const socket = socketIOClient("localhost:8080")
-  //   socket.on("connect", () => {
-  //     console.log(socket)
-  //     setSocket(toJSON(socket))
-  //   })
-  //   socket.on("disconnect", () => {
-  //     console.log("연결 끊김")
-  //   })
-  // }, [setSocket])
-  
-
   useEffect(() => {
-
-    // return () => {
-    //   socketClient.disconnect();
-    // }
-  }, []);
-
+    socketClient.on("update-roomList", ({rooms}) => {
+      setRoomList(rooms)
+    })
+  }, [socketClient])
 
   return (
     <div> 

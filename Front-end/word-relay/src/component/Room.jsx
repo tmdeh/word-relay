@@ -27,9 +27,12 @@ const Room = () => {
   const navigate = useNavigate();
 
 
-  socket.on("joined", (member) => {
-    console.log(member)
-  })
+  useEffect(() => {
+    socket.on("update-room", ({member}) => {
+      console.log(member)
+      setMemberList(member)
+    })
+  }, [])
 
   const getRoomInfo = useCallback(async () => {
     try {
@@ -79,12 +82,16 @@ const Room = () => {
     try {
       let con = window.confirm("나가시겠습니까?");
       if(con) {
+
         const response = await axios.delete(`http://${HOST}/room/${id}`,{
           headers: {
             Authorization: token
           }
         })
         if(response.status === 200) {
+          socket.emit("leave-room", ({
+            roomId: id
+          }))
           navigate("/home");
         }
       }

@@ -1,8 +1,7 @@
 const Room = require("../database/model/room");
 
 module.exports = async(socket, roomId) => {
-  console.log(roomId)
-  const { member } = await Room.findById(roomId).populate();
-  socket.to(roomId).emit("joined", {member});
+  const { member } = await Room.findById(roomId).populate('member');
+  socket.to(roomId).emit("update-room", {member});
   socket.join(roomId)
-} 
+}

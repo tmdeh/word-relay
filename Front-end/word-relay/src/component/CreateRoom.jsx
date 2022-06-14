@@ -29,6 +29,7 @@ const CreateRoom = () => {
     }
     setLoading(true)
     const res = await createRoom(token, data, navigate, socket);
+    socket.emit("create-room")
     if(res === 401) {
       setToken("");
       window.location.reload();
