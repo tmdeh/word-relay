@@ -27,13 +27,6 @@ const Room = () => {
   const navigate = useNavigate();
 
 
-  useEffect(() => {
-    socket.on("update-room", ({member}) => {
-      console.log(member)
-      setMemberList(member)
-    })
-  }, [])
-
   const getRoomInfo = useCallback(async () => {
     try {
       setLoading(true);
@@ -50,7 +43,7 @@ const Room = () => {
       setLoading(false);
     } catch (error) {
       if (error.response.status === 401) {
-        tokenExpired(navigate)
+        setToken("")
         window.location.reload();
       }
       console.log(error)
@@ -72,9 +65,21 @@ const Room = () => {
     getNickname();
   }, [getRoomInfo, getNickname])
 
+  useEffect(() => {
+    socket.on("update-room", ({member}) => {
+      console.log('aaa')
+      console.log(member)
+      setMemberList(member)
+    })
+  
+    socket.on("started-game", () => {
+      console.log("aaa")
+      // navigate(`/wordrelay/${id}`)
+    })
+  }, [socket])
 
   const onStartButtonClick = () => {
-    
+    socket.emit("start-game", {roomId: id})
   }
 
 

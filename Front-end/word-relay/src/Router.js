@@ -6,6 +6,7 @@ import CreateRoom from "./component/CreateRoom";
 import Nickname from "./component/Nickname";
 import Home from "./component/Home";
 import tokenState from "./recoil/token"
+import StartedRoom from "./component/StartedRoom";
 
 
 
@@ -22,6 +23,7 @@ const Router = () => {
         <Route path="home/:id" element={<Room />}></Route>
         <Route path="create" element={<CreateRoom />}></Route>
       </Route>
+      <Route path="/wordrelay/:id" element={<StartedRoom />}></Route>
       <Route path="*" element={<Navigate replace to='/home'></Navigate>}></Route>
       </>
       ) :

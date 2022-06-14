@@ -1,4 +1,8 @@
 
-module.exports = ({sokcet, roomId}) => {
-  sokcet.to(roomId).emit("start");
+module.exports = (io, roomId) => {
+  try {
+    io.to(roomId).emit("started");
+  } catch (error) {
+    console.log(error)
+  }
 }

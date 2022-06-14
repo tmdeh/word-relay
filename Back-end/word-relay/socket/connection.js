@@ -14,16 +14,17 @@ exports.init = (io) => {
       socket.emit("OK", {id: socket.id})
     })
 
-    socket.on('join', ({roomId}) =>join(socket, roomId));//방 입장
+    socket.on('join', ({roomId}) => join(io, socket, roomId));//방 입장
     
     socket.on('create-room', () => createRoom(socket));
 
-    socket.on('start', ({roomId})=>{//게임 시작
-      start(socket, roomId);
+    socket.on('start-game', ({roomId})=>{//게임 시작
+      io.to(roomId).emit("started-game");
+      // start(io, roomId);
     });
 
     socket.on('leave-room', ({roomId}) => {//방 퇴장
-      exitRoom(socket, roomId)
+      exitRoom(io, socket, roomId)
     })
 
     socket.on('answer', ()=>{}); //사용자의 답

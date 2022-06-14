@@ -1,6 +1,6 @@
 const Room = require("../database/model/room")
 
-module.exports = async(socket, roomId) => {
+module.exports = async(io, socket, roomId) => {
   try {
     if(null == await Room.findById(roomId)) {
       const rooms = await Room.find();
@@ -8,8 +8,7 @@ module.exports = async(socket, roomId) => {
       return
     }
     const { member } = await Room.findById(roomId).populate('member');
-  
-    socket.to(roomId).emit("update-room", {member})
+    socket.broadcast.to(roomId).emit("update-room", {member})
   } catch (error) {
     console.error(error)
   } finally {
