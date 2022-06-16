@@ -12,11 +12,12 @@ import getRoomList from "../request/getList";
 import getNickname from "../request/getNickname";
 import updateNickname from "../request/updateNickname";
 import { SocketContext } from "../socket/socket";
+import nicknameState from "../recoil/nickname";
 
 
 const Home = () => {
   const [token, setToken] = useRecoilState(tokenState)
-  const [nickname, setNickname] = useState("");
+  const [nickname, setNickname] = useRecoilState(nicknameState);
   const [nicknameInput, setNicknameInput] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
   const [roomList, setRoomList] = useState([]);
@@ -47,7 +48,7 @@ const Home = () => {
     setIsLoading(false);
   }
 
-  const onChageNicknameInput = (e) => {
+  const onChangeNicknameInput = (e) => {
     setNicknameInput(e.target.value)
   }
 
@@ -132,7 +133,7 @@ const Home = () => {
       </NavigationBar>
       <Modal open={open} close={close} header={"닉네임 변경"}>
         <ModalContainer>
-          <NicknameInput placeholder="새로운 닉네임" onChange={onChageNicknameInput}></NicknameInput>
+          <NicknameInput placeholder="새로운 닉네임" onChange={onChangeNicknameInput}></NicknameInput>
           <Button color={"#99EA97"} onClick={changeNicknameButton}>변경하기</Button>
           <Button color={"#EA9797"} onClick={close}>취소</Button>
         </ModalContainer>
@@ -173,6 +174,7 @@ const NavigationBar = styled.div`
 
 const NameDiv = styled.div`
   font-size: 30px;
+  text-overflow: nowrap;
   margin-left: 69px;
 `
 

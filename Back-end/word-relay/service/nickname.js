@@ -18,6 +18,7 @@ exports.set = async(req, res) => {
     
     res.status(201).json({
       token: token,
+      nickname: nickname
     });
   } catch (error) {
     console.error(error)

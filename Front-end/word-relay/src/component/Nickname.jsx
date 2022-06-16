@@ -5,13 +5,17 @@ import styled from "styled-components";
 import { Button } from "./Button";
 import { useNavigate } from "react-router-dom";
 import tokenExpired from "../expired";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import tokenState from "../recoil/token"
 import { HOST } from "../config";
+import nicknameState from "../recoil/nickname";
+import { useContext } from "react";
+import { SocketContext } from "../socket/socket";
 
 const Nickname = () => {
-  const [nickname, setNickname] = useState("");
+  const [nickname, setNickname] = useRecoilState(nicknameState);
   const [isLoading, setIsLoading] = useState(false);
+  const socket = useContext(SocketContext);
   const setToken = useSetRecoilState(tokenState);
 
   const navigate = useNavigate();
@@ -37,8 +41,9 @@ const Nickname = () => {
       .then((res) => {
         console.log(res.data)
         if (res.status === 201) {
-          // localStorage.setItem('token', res.data.token)
-          setToken(res.data.token)
+          setToken(res.data.token);
+          setNickname(res.data.nickname);
+          socket.emit("init", {nickname});
         }
       }).then(() => {
         window.location.reload()

@@ -6,9 +6,9 @@ const User = require('../database/model/user')
 exports.get = async(req, res, next) => {
   try {
     const roomId = req.params.roomId;
-    const roomInfo = await Room.find({_id : roomId}).populate("head").populate("member");
+      const roomInfo = await Room.findById(roomId).populate("head").populate("member.user");
     res.status(200).json({
-      roomInfo: roomInfo[0],
+      roomInfo: roomInfo,
       nickname: req.body.nickname,
     })
   } catch (error) {
@@ -31,7 +31,9 @@ exports.create = async(req, res, next) => {
       has_password: req.body.hasPassword,
       head : _id,
       password : req.body.password,
-      member: [_id],
+      started: false,
+      member: [
+        {user : _id, score:0}],
       history: {}
     })
   
@@ -66,7 +68,7 @@ exports.join = async(req, res, next) => {
         error.status = 419;
         throw error
       }
-      await Room.findOneAndUpdate({_id : roomId}, {$push: { member: _id }})
+      await Room.findOneAndUpdate({_id : roomId}, {$push: { member: {user:_id, score: 0}}})
       res.status(201).json({
         status: 201,
         message : "Created"
@@ -97,7 +99,7 @@ const passwordCheck = async(roomId, hasPassword, userPassword) => {
 exports.getList = async(req, res) => {
   try {
     // res.status(200).json({})
-    const data = await Room.find().populate('member').populate('head');
+    const data = await Room.find().populate('member.user').populate('head');
     
     if(data.length === 0) {
       res.status(204);
@@ -120,7 +122,7 @@ exports.getList = async(req, res) => {
 exports.exit = async(req, res, next) => {
   try {
     const roomId = req.params.roomId;
-    const room = await Room.findById(roomId).populate("head").populate("member");
+    const room = await Room.findById(roomId).populate("head").populate("member.user");
 
     let userId = "";
     for(let i of room.member) {

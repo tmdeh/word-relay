@@ -7,13 +7,31 @@ import Nickname from "./component/Nickname";
 import Home from "./component/Home";
 import tokenState from "./recoil/token"
 import StartedRoom from "./component/StartedRoom";
+import { SocketContext } from "./socket/socket";
+import nicknameState from "./recoil/nickname";
 
 
 
 const Router = () => {
 
   const token = useRecoilValue(tokenState);
+  const socket = useContext(SocketContext);
+  const nickname = useRecoilValue(nicknameState);
+  const preventClose = (e) => { 
+    e.preventDefault();
+    socket.emit("disconnect");
+    e.returnValue = "";
+  }
 
+  useEffect(() => {  
+    window.addEventListener("beforeunload", preventClose);  
+    return () => {    
+      window.removeEventListener("beforeunload", preventClose);
+    };
+  }, []);
+  useEffect(() => {
+    socket.emit("socket-changed", {nickname})
+  }, [socket.id])
   return (
     <Routes>
     {token !== "" ? (

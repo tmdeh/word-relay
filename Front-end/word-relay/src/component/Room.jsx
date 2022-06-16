@@ -1,12 +1,15 @@
 import axios from "axios";
 import React, { useCallback, useContext, useEffect, useState } from "react";
+import { useBeforeunload } from "react-beforeunload";
 import { useNavigate, useParams } from "react-router-dom";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
 
 import { HOST } from "../config";
 import tokenExpired from "../expired";
+import nicknameState from "../recoil/nickname";
 import tokenState from "../recoil/token";
+import getRoomInfo from "../request/getRoomInfo";
 import { SocketContext } from "../socket/socket";
 import Button from "./Button";
 import Loading from "./Loading";
@@ -18,7 +21,7 @@ const Room = () => {
   const { id } = useParams();
 
   const [loading, setLoading] = useState(false);
-  const [nickname, setNickname] = useState("");
+  const nickname = useRecoilValue(nicknameState)
   const [head, setHead] = useState("");
   const [title, setTitle] = useState("");
   const [memberLimit, setMemberLimit] = useState(0);
@@ -26,55 +29,36 @@ const Room = () => {
 
   const navigate = useNavigate();
 
+  useBeforeunload((e) => {
+    e.preventDefault();
+  })
 
-  const getRoomInfo = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(`http://${HOST}/room/${id}`, {
-        headers: {
-          Authorization: token
-        }
-      });
-      console.log(response.data)
-      setHead(response.data.roomInfo.head.nickname);
-      setTitle(response.data.roomInfo.name);
-      setMemberList(response.data.roomInfo.member);
-      setMemberLimit(response.data.roomInfo.member_limit);
-      setLoading(false);
-    } catch (error) {
-      if (error.response.status === 401) {
-        setToken("")
-        window.location.reload();
-      }
-      console.log(error)
+  const setRoomInfo = useCallback(async () => {
+    const response = await getRoomInfo(token, id,navigate)
+    if(response === 401) {
+      setToken("");
+      window.location.reload();
     }
-  }, [id, navigate, token])
-  
-  const getNickname = useCallback(async() => {
-    const response = await axios.get(`http://${HOST}/nickname`, {
-      headers: {
-        Authorization: token
-      }
-    });
-    setNickname(response.data.nickname)
-  }, [token])
-
+    setLoading(true);
+    setHead(response.data.roomInfo.head.nickname);
+    setTitle(response.data.roomInfo.name);
+    setMemberList(response.data.roomInfo.member);
+    setMemberLimit(response.data.roomInfo.member_limit);
+    setLoading(false);
+  }, [token, navigate])
   
   useEffect(() => {
-    getRoomInfo();
-    getNickname();
-  }, [getRoomInfo, getNickname])
+    setRoomInfo();
+  }, [])
 
   useEffect(() => {
     socket.on("update-room", ({member}) => {
-      console.log('aaa')
-      console.log(member)
+
       setMemberList(member)
     })
   
     socket.on("started-game", () => {
-      console.log("aaa")
-      // navigate(`/wordrelay/${id}`)
+      navigate(`/wordrelay/${id}`)
     })
   }, [socket])
 
@@ -130,9 +114,9 @@ const Room = () => {
           <Body>
             {memberList.map(i =>
               <Member key={i._id}>
-                <MemberName>{i.nickname}</MemberName>
+                <MemberName>{i.user.nickname}</MemberName>
                 <Star>
-                  {i.nickname === head ? <img src="/star.svg" alt="방장"/> : null}
+                  {i.user.nickname === head ? <img src="/star.svg" alt="방장"/> : null}
                 </Star>
               </Member>)}
             {[...Array(memberLimit-memberList.length)].map((v,i) => 
