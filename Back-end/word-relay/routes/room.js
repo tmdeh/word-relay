@@ -18,4 +18,6 @@ router.delete("/:roomId", room.exit);
 //방 정보 가져오기
 router.get('/:roomId', room.get)
 
+router.get('/game/:roomId', room.gameInit)
+
 module.exports = router;

@@ -4,13 +4,16 @@ const Schema = mongoose.Schema;
 
 const gameSchema = new Schema({
   roomId : {type:Schema.Types.ObjectId, ref:"room"},
-  history : [
+  member : [
     {
-      user : {type:Schema.Types.ObjectId, ref:'user'},
-      score : Number,
+      user : {type:Schema.Types.ObjectId, ref:"user"},
+      hart : Number,
+      score : Number
     }
   ],
-  winner: {type:Schema.Types.ObjectId, ref:"user"}
+  winner: {type:Schema.Types.ObjectId, ref:"user"},
+  history : [String],
+  turnIndex : Number
 })
 
 module.exports = mongoose.model('game', gameSchema);

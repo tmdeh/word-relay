@@ -1,4 +1,5 @@
 const app = require('../app');
+const game = require('../database/model/game');
 const Room = require('../database/model/room')
 const User = require('../database/model/user')
 
@@ -6,10 +7,23 @@ const User = require('../database/model/user')
 exports.get = async(req, res, next) => {
   try {
     const roomId = req.params.roomId;
-      const roomInfo = await Room.findById(roomId).populate("head").populate("member.user");
+    const roomInfo = await Room.findById(roomId).populate("head").populate("member");
     res.status(200).json({
       roomInfo: roomInfo,
       nickname: req.body.nickname,
+    })
+  } catch (error) {
+    next(error)
+    res.status(500)
+  }
+}
+
+exports.gameInit = async(req, res, next) => {
+  try {
+    const roomId = req.params.roomId;
+    const gameInfo = await game.findOne({roomId : roomId}).populate('member.user').populate("roomId");
+    res.status(200).json({
+      gameInfo : gameInfo
     })
   } catch (error) {
     next(error)
@@ -33,7 +47,7 @@ exports.create = async(req, res, next) => {
       password : req.body.password,
       started: false,
       member: [
-        {user : _id, score:0}],
+        _id],
       history: {}
     })
   
@@ -68,7 +82,7 @@ exports.join = async(req, res, next) => {
         error.status = 419;
         throw error
       }
-      await Room.findOneAndUpdate({_id : roomId}, {$push: { member: {user:_id, score: 0}}})
+      await Room.findOneAndUpdate({_id : roomId}, {$push: { member: _id}})
       res.status(201).json({
         status: 201,
         message : "Created"
@@ -98,13 +112,7 @@ const passwordCheck = async(roomId, hasPassword, userPassword) => {
 
 exports.getList = async(req, res) => {
   try {
-    // res.status(200).json({})
-    const data = await Room.find().populate('member.user').populate('head');
-    
-    if(data.length === 0) {
-      res.status(204);
-      return
-    }
+    const data = await Room.find().populate('member').populate('head');
     res.status(200).json({
       status: 200,
       message : "OK",
@@ -122,7 +130,7 @@ exports.getList = async(req, res) => {
 exports.exit = async(req, res, next) => {
   try {
     const roomId = req.params.roomId;
-    const room = await Room.findById(roomId).populate("head").populate("member.user");
+    const room = await Room.findById(roomId).populate("head").populate("member");
 
     let userId = "";
     for(let i of room.member) {

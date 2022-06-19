@@ -3,7 +3,7 @@ const answer = require("./answer");
 const createRoom = require("./createRoom");
 const disconnect = require("./disconnect");
 const exitRoom = require("./exitRoom");
-const go = require("./go");
+const hit = require("./hit");
 const init = require("./init");
 const join = require("./join");
 const socketChanged = require("./socketChanged");
@@ -44,13 +44,16 @@ exports.init = (io) => {
       exitRoom(io, socket, roomId)
     })
 
-    socket.on("go", ({roomId}) => {
-      go(io, roomId)
+    socket.on('answer', ({roomId, word})=>{
+      answer(io, socket, roomId, word)
+    }); //사용자의 답
+
+    socket.on('hit', ({roomId, nickname}) => {
+      hit(io, socket, roomId, nickname)
     })
 
+    socket.on("die", ({roomId}) => {
 
-    socket.on('answer', ({roomId})=>{
-      answer(io, socket, roomId)
-    }); //사용자의 답
+    })
   })
 }

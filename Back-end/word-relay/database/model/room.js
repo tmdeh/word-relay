@@ -8,10 +8,7 @@ const roomSchema = new Schema({
     has_password: Boolean, //비밀번호가 존재하는지
     password: String, //비밀번호
     member: [
-        {
-            user : {type: Schema.Types.ObjectId, ref: "user"},
-            score : Number
-        }
+        {type: Schema.Types.ObjectId, ref: "user"},
     ],
     head: {type: Schema.Types.ObjectId, ref:"user"},  //방장
     started: Boolean,

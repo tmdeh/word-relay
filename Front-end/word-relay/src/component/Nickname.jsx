@@ -39,7 +39,6 @@ const Nickname = () => {
     }
     await axios.post(`http://${HOST}/nickname`, data)
       .then((res) => {
-        console.log(res.data)
         if (res.status === 201) {
           setToken(res.data.token);
           setNickname(res.data.nickname);

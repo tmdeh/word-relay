@@ -7,14 +7,18 @@ exports.set = async(req, res) => {
 
     await check(nickname)
 
-    const {token, exp} = jwt.accessSign(nickname);
+    const {token, exp} = await jwt.accessSign(nickname);
 
-    const user = new User({
+    const user = {
       nickname : nickname,
-      token_exp : new Date(exp)
-    })
+      token_exp : new Date(exp),
+      tokenId : null 
+    }
   
-    await user.save()
+    await User.create(user)
+
+    const u = await User.find()
+    console.log(u)
     
     res.status(201).json({
       token: token,

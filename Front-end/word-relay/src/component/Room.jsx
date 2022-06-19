@@ -34,12 +34,14 @@ const Room = () => {
   })
 
   const setRoomInfo = useCallback(async () => {
+    setLoading(true);
+
     const response = await getRoomInfo(token, id,navigate)
     if(response === 401) {
       setToken("");
       window.location.reload();
     }
-    setLoading(true);
+    console.log(response)
     setHead(response.data.roomInfo.head.nickname);
     setTitle(response.data.roomInfo.name);
     setMemberList(response.data.roomInfo.member);
@@ -53,7 +55,6 @@ const Room = () => {
 
   useEffect(() => {
     socket.on("update-room", ({member}) => {
-
       setMemberList(member)
     })
   
@@ -114,9 +115,9 @@ const Room = () => {
           <Body>
             {memberList.map(i =>
               <Member key={i._id}>
-                <MemberName>{i.user.nickname}</MemberName>
+                <MemberName>{i.nickname}</MemberName>
                 <Star>
-                  {i.user.nickname === head ? <img src="/star.svg" alt="방장"/> : null}
+                  {i.nickname === head ? <img src="/star.svg" alt="방장"/> : null}
                 </Star>
               </Member>)}
             {[...Array(memberLimit-memberList.length)].map((v,i) => 

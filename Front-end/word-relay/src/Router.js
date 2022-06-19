@@ -9,6 +9,7 @@ import tokenState from "./recoil/token"
 import StartedRoom from "./component/StartedRoom";
 import { SocketContext } from "./socket/socket";
 import nicknameState from "./recoil/nickname";
+import Over from "./component/Over";
 
 
 
@@ -41,6 +42,7 @@ const Router = () => {
         <Route path="home/:id" element={<Room />}></Route>
         <Route path="create" element={<CreateRoom />}></Route>
       </Route>
+      <Route path="/over/:id" element={<Over></Over>}></Route>
       <Route path="/wordrelay/:id" element={<StartedRoom />}></Route>
       <Route path="*" element={<Navigate replace to='/home'></Navigate>}></Route>
       </>

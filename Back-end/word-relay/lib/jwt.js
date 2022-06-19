@@ -15,8 +15,6 @@ exports.accessSign = async(name) => {
     process.env.PRIVATE_KEY
   );
 
-  await User.deleteMany({exp : {$lte : parseInt(Date.now()/1000)}})
-
   return {token: token, exp: exp};
 };
 
