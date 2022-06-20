@@ -14,7 +14,6 @@ exports.accessSign = async(name) => {
     },
     process.env.PRIVATE_KEY
   );
-
   return {token: token, exp: exp};
 };
 

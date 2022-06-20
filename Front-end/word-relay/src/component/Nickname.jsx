@@ -3,8 +3,6 @@ import axios from 'axios'
 import Loading from './Loading'
 import styled from "styled-components";
 import { Button } from "./Button";
-import { useNavigate } from "react-router-dom";
-import tokenExpired from "../expired";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import tokenState from "../recoil/token"
 import { HOST } from "../config";
@@ -17,9 +15,6 @@ const Nickname = () => {
   const [isLoading, setIsLoading] = useState(false);
   const socket = useContext(SocketContext);
   const setToken = useSetRecoilState(tokenState);
-
-  const navigate = useNavigate();
-
   const onChange = (e) => {
     setNickname(e.target.value)
     if (e.key === 'Enter') {
@@ -56,7 +51,8 @@ const Nickname = () => {
           } else if(err.response.data.status === 500) {
             alert("서버 오류 발생")
           } else if(err.response.data.status === 401) {
-            tokenExpired(navigate);
+            setToken("")
+            window.location.reload();
           } else {
             alert("알수 없는 오류 발생")
           }

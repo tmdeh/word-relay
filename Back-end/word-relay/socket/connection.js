@@ -1,4 +1,3 @@
-const room = require("../database/model/room");
 const answer = require("./answer");
 const createRoom = require("./createRoom");
 const disconnect = require("./disconnect");
@@ -44,16 +43,12 @@ exports.init = (io) => {
       exitRoom(io, socket, roomId)
     })
 
-    socket.on('answer', ({roomId, word})=>{
-      answer(io, socket, roomId, word)
+    socket.on('answer', ({roomId, word, nickname})=>{
+      answer(io, socket, roomId, word, nickname)
     }); //사용자의 답
 
     socket.on('hit', ({roomId, nickname}) => {
       hit(io, socket, roomId, nickname)
-    })
-
-    socket.on("die", ({roomId}) => {
-
     })
   })
 }

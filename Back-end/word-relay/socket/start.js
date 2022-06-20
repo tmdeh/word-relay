@@ -30,7 +30,6 @@ module.exports = async(io, roomId) => {
     setTimeout(async() => {
       await Room.updateOne({roomId}, {started: true});
       const {member, turnIndex} = await Game.findOne({roomId : roomId}).populate("member.user");
-      console.log(turnIndex)
       io.to(roomId).emit("update-word", {word: hangle[randomIndex], turn : member[turnIndex].user.nickname, member : member})
     }, 3000)
 

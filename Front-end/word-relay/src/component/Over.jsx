@@ -1,4 +1,3 @@
-import axios from "axios";
 import React from "react"
 import { useState } from "react";
 import { useEffect } from "react";
@@ -14,6 +13,7 @@ const Over = () => {
   const {id} = useParams();
   const [token, setToken] = useRecoilState(tokenState);
   const [loading, setLoading] = useState(true);
+  const [info, setInfo] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,7 +27,12 @@ const Over = () => {
       setToken("");
       window.location.reload();
     }
+    setInfo(res.data.gameInfo)
     setLoading(false)
+  }
+
+  const onClickBack = () => {
+    navigate("/home");
   }
 
   return(
@@ -38,16 +43,14 @@ const Over = () => {
         <>
           <TitleDiv>결과</TitleDiv>
           <UserList>
-            <User>
-              <Nickname>사람1</Nickname>
-              <Score>0점</Score>
+            {info.member.map(i =>
+            <User key={i._id}>
+              <Nickname>{i.user.nickname}</Nickname>
+              <Score>{i.score}점</Score>
             </User>
-            <User>
-              <Nickname>사람2</Nickname>
-              <Score>0점</Score>
-            </User>
+            )}
           </UserList>
-          <Button color={"#EA9797"}>돌아가기</Button>
+          <Button color={"#EA9797"} onClick={onClickBack}>돌아가기</Button>
         </> 
       }
     </AppMain>
@@ -56,8 +59,9 @@ const Over = () => {
 }
 
 const AppMain = styled.div`
-display: flex;
-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `
 
 const TitleDiv = styled.div`
@@ -73,7 +77,8 @@ const UserList = styled.div`
 `
 
 const User = styled.div`
-  width: 60%;
+  /* width: 60%; */
+  width: 800px;
   height: 80px;
   background-color: #9EDA9D;
   border-radius: 20px;
@@ -89,6 +94,10 @@ const Nickname = styled.div`
 `
 
 const Score = styled.div`
+  
+`
+
+const Hart = styled.div`
   
 `
 

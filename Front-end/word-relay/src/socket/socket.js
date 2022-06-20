@@ -1,7 +1,8 @@
-import React, { createContext, useEffect } from 'react';
+import React, { createContext } from 'react';
 import { io } from 'socket.io-client';
+import { HOST } from '../config';
 
-const socket = io('http://localhost:8070'),
+const socket = io(`http://${HOST}`),
 SocketContext = createContext(socket);
 
 socket.on('connect', () => console.log('connected to socket'));

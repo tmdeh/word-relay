@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { useBeforeunload } from "react-beforeunload";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import nicknameState from "../recoil/nickname";
 import tokenState from "../recoil/token";
 import getGameInfo from "../request/getGameInfo";
@@ -19,13 +19,15 @@ const StartedRoom = () => {
   const [loading, setLoading] = useState(true);
   const [start, setStart] = useState(false);
   const nickname = useRecoilValue(nicknameState);
+  const [msg, setMsg] = useState("");
   const [input, setInput] = useState("");
   const [myTurn, setMyTurn] = useState(false);
+  const [turn, setTurn] = useState("");
   const [token, setToken] = useRecoilState(tokenState);
   const timeRef = useRef(null);
+  const inputRef = useRef();
   const [hart, setHart] = useState(3);
   const socket = useContext(SocketContext);
-  const [roomInfo, setRoomInfo] = useState({});
   const [memberInfo, setMemberInfo] = useState([]);
   const [word, setWord] = useState("");
   const [timer, setTimer] = useState(3);
@@ -39,7 +41,7 @@ const StartedRoom = () => {
   useEffect(() => {
     socket.on("update-word", ({word, turn, member}) => {
       setMemberInfo(member)
-      console.log("turn : " + turn)
+      setTurn(turn)
       if(nickname === turn) {
         setMyTurn(true)
       } else {
@@ -52,17 +54,24 @@ const StartedRoom = () => {
     socket.on("over", ()=> {
       navigate("/over/" + id)
     })
-  }, [socket])
+
+    socket.on("wrong", ({msg}) => {
+      setMsg(msg);
+    })
+  }, [])
 
   
 
   useEffect(() => {
     if(start) {
-      if(timer <= 0) {
-        clearInterval(timeRef.current);
-        setTimer(5)
-        setHart(hart - 1)
-        socket.emit("hit", {roomId: id, nickname});
+      if(myTurn) {
+        if(timer <= 0) {
+          clearInterval(timeRef.current);
+          setHart(hart - 1)
+          setMsg("");
+          setTimer(5)
+          socket.emit("hit", {roomId: id, nickname});
+        }
       }
     }
   }, [timer])
@@ -99,13 +108,20 @@ const StartedRoom = () => {
   }
 
   const onChangeInput = (e) => {
+    setMsg("");
     setInput(e.currentTarget.value)
   }
 
   const onEnterKeyPress = (e) => {
-    if(myTurn) {
-      if(e.key === "Enter") {
-        socket.emit("answer", {roomId : id, word: input})
+    if(start) {
+      if(myTurn) {
+        if(e.key === "Enter") {
+          inputRef.current.value = "";
+          const regex = /^[가-힣|0-9|]+$/;
+          if(regex.test(input)){
+            socket.emit("answer", {roomId : id, word: input, nickname: nickname})
+          }
+        }
       }
     }
   }
@@ -113,16 +129,26 @@ const StartedRoom = () => {
   return(
     <AppDiv>
       <WordBoxDiv>{start ? word : timer + "초 뒤에 시작"}</WordBoxDiv>
+      {msg}
       <InputDiv>
-        <Input onChange={onChangeInput} onKeyDown={onEnterKeyPress}></Input>
+        <Input onChange={onChangeInput} onKeyDown={onEnterKeyPress} ref={inputRef}
+        onPaste={(e) => {
+          e.preventDefault();
+          return false;
+        }}
+        onCopy={(e) => {
+          e.preventDefault();
+          return false;
+        }}></Input>
         <Timer>{timer}</Timer>
       </InputDiv>
       {loading ?
       <Loading isLoading={loading} type="spin" color="99EA97"></Loading> :          
       <UserListDiv>
         {memberInfo.map(e => 
-          <UserDiv key={e._id} color={myTurn ? '#DA9D9D' : '#9EDA9D'}>
+          <UserDiv key={e._id} color={turn === e.user.nickname ? '#DA9D9D' : '#9EDA9D'}>
             <Nickname>{e.user.nickname}</Nickname>
+            <Hart>{e.hart}남음</Hart>
             <Score>{e.score}점</Score>
           </UserDiv>
         )}
@@ -192,6 +218,8 @@ const UserDiv = styled.div`
 const Nickname = styled.div``
   
 const Score = styled.div`
+`
+const Hart = styled.div`
 `
 
 

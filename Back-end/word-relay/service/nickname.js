@@ -38,12 +38,9 @@ exports.change = async(req, res) => {
     const newNikcname = req.body.newNickname;
     const beforeNickname = req.body.nickname;
     await check(newNikcname)
-    const user = await User.findOne({nickname: beforeNickname})
 
-    await User.findOneAndUpdate({nickname: beforeNickname}, {nickname: newNikcname})
-    // console.log(user)
-    const {token} = jwt.accessSign(newNikcname)
-
+    const {token, exp} = await jwt.accessSign(newNikcname)
+    await User.findOneAndUpdate({nickname: beforeNickname}, {nickname: newNikcname, token_exp : exp})
     res.status(200).json({
       status: 200,
       message : "OK",

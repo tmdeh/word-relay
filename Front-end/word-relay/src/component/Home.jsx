@@ -40,6 +40,7 @@ const Home = () => {
       newNickname: nicknameInput
     }
     const res = await updateNickname(token, data);
+    console.log(res)
     if(res.status === 200) {
       setNickname(res.newNickname);
       setToken(res.token)

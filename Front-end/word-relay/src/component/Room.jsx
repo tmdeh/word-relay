@@ -6,7 +6,6 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
 
 import { HOST } from "../config";
-import tokenExpired from "../expired";
 import nicknameState from "../recoil/nickname";
 import tokenState from "../recoil/token";
 import getRoomInfo from "../request/getRoomInfo";
@@ -41,17 +40,16 @@ const Room = () => {
       setToken("");
       window.location.reload();
     }
-    console.log(response)
     setHead(response.data.roomInfo.head.nickname);
     setTitle(response.data.roomInfo.name);
     setMemberList(response.data.roomInfo.member);
     setMemberLimit(response.data.roomInfo.member_limit);
     setLoading(false);
-  }, [token, navigate])
+  }, [id, token, navigate, setToken])
   
   useEffect(() => {
     setRoomInfo();
-  }, [])
+  }, [setRoomInfo])
 
   useEffect(() => {
     socket.on("update-room", ({member}) => {
@@ -61,7 +59,7 @@ const Room = () => {
     socket.on("started-game", () => {
       navigate(`/wordrelay/${id}`)
     })
-  }, [socket])
+  }, [socket, navigate, id])
 
   const onStartButtonClick = () => {
     socket.emit("start-game", {roomId: id})
