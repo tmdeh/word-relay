@@ -10,7 +10,6 @@ const getRoomList = async(token) => {
           Authorization: token
         }
       });
-      console.log(res)
       if(res.status === 200) {
         return res.data.list;
       }
