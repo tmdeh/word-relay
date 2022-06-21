@@ -3,7 +3,7 @@ const { errorSelector } = require("recoil");
 const { HOST } = require("../config");
 
 
-module.exports = async(token, id,navigate) => {
+export default async(token, id,navigate) => {
   try {
     const response = await axios.get(`http://${HOST}/room/game/${id}`, {
       headers: {

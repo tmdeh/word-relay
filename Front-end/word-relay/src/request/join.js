@@ -1,7 +1,7 @@
-const { default: axios } = require("axios")
+import axios from "axios"
 const { HOST } = require("../config")
 
-module.exports = async(token, roomId, password, navigate, socket) => {
+export default async(token, roomId, password, navigate, socket) => {
   try {
     console.log("socket", socket)
     if(token !== "") {
