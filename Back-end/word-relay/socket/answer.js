@@ -14,9 +14,13 @@ module.exports = async(io, socket, roomId, input, nickname) => {
     }
   }
   if(lastWord.substring(lastWord.length - 1, lastWord.length) === input[0]) {
+    if(input.length <= 1) {
+      socket.emit("wrong", {msg : "두글자 이상인 단어를 사용하세요."});
+      return;
+    }
+
     for(let w of game.history) {
       if(w == input) {
-        console.log("중복 발생")
         socket.emit("wrong", {msg : "사용한 단어 입니다."})
         return
       }
